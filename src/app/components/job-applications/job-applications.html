@@ -1,0 +1,80 @@
+<div class="applications-container">
+
+  <h1>Job Applications</h1>
+
+  <div class="tabs">
+    <button [class.active]="activeTab === 'UPCOMING'" (click)="setTab('UPCOMING')">
+      Upcoming
+    </button>
+
+    <button [class.active]="activeTab === 'ACCEPTED'" (click)="setTab('ACCEPTED')">
+      ACCEPTED ({{ applications().filter(a => a.status === 'ACCEPTED').length }})
+    </button>
+
+    <button [class.active]="activeTab === 'REJECTED'" (click)="setTab('REJECTED')">
+      Rejected
+    </button>
+  </div>
+
+  <!-- loader -->
+  <div *ngIf="loading()" class="loader-container">
+    <div class="loader"></div>
+    <p>Loading jobs...</p>
+  </div>
+
+  <!--Empty State -->
+  <div *ngIf="!loading() && applications().length === 0" class="no-jobs">
+    No jobs found 😔
+  </div>
+  
+  <ng-container *ngIf="!loading() && applications().length > 0">
+  <div class="application-card"  *ngFor="let app of filteredApplications(); let i = index" (click)="toggleCard(i)"
+    [class.active]="selectedIndex === i" [ngClass]="{
+    'selected': app.status === 'SELECTED',
+    'rejected': app.status === 'REJECTED'
+  }">
+
+    <!-- header -->
+    <div class="card-header">
+      <div>
+        <h3>{{ app.jobTitle }}</h3>
+        <p class="company">{{ app.companyName }}</p>
+      </div>
+
+      <span class="status" [ngClass]="app.status.toLowerCase()">
+        {{ app.status }}
+      </span>
+    </div>
+
+    <div class="card-meta">
+      📅 {{ app.appliedAt | date:'mediumDate' }}
+    </div>
+
+    <!-- expand -->
+    <div class="card-body" *ngIf="selectedIndex === i">
+
+      <h4>Applicant Info</h4>
+
+      <div class="user-info">
+        <p><span>Name:</span> {{ app.userResponse?.fullName }}</p>
+        <p><span>City:</span> {{ app.userResponse?.currentCity }}</p>
+        <p><span>Phone:</span> {{ app.userResponse?.phoneNumber }}</p>
+      </div>
+
+      <!--  Status Update -->
+      <div class="status-update" (click)="$event.stopPropagation()">
+        <label>Update Status:</label>
+
+        <select [value]="app.status" [disabled]="app.status === 'SELECTED' || app.status === 'REJECTED'"
+          (change)="updateStatus(app, $any($event.target).value, $event)">
+          <option *ngFor="let s of statuses" [value]="s">
+            {{ s }}
+          </option>
+        </select>
+      </div>
+
+    </div>
+
+  </div>
+  </ng-container>
+</div>

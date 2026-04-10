@@ -1,0 +1,63 @@
+<div class="saved-container" >
+
+  <h2>Applyed Jobs</h2>
+
+  <!-- Empty State -->
+  <div *ngIf="jobs().length === 0" class="no-jobs">
+    No saved jobs yet 😔
+  </div>
+
+  <div class="tabs">
+  <button [class.active]="activeTab === 'ALL'" (click)="setTab('ALL')">All</button>
+
+  <button [class.active]="activeTab === 'UPCOMING'" (click)="setTab('UPCOMING')">
+    Upcoming
+  </button>
+
+  <button [class.active]="activeTab === 'ACCEPTED'" (click)="setTab('ACCEPTED')">
+    Accepted
+  </button>
+
+  <button [class.active]="activeTab === 'REJECTED'" (click)="setTab('REJECTED')">
+    Rejected
+  </button>
+</div>
+
+  <!-- Job List -->
+  <div class="job-list">
+  @for(job of filteredJobs(); track job.id){
+    <div class="job-card" [ngClass]="{
+       'applied': job.status === 'APPLIED',
+       'rejected': job.status === 'REJECTED',
+       'accepted': job.status === 'ACCEPTED'
+     }">
+      <div class="job-header">
+        <div>
+          <h3>{{ job.jobTitle }}</h3>
+          <p class="company">{{ job.companyName }}</p>
+        </div>
+        <span class="status-badge" [ngClass]="{
+          'applied': job.status === 'APPLIED',
+          'rejected': job.status === 'REJECTED',
+          'selected': job.status === 'ACCEPTED'
+        }">
+          {{ job.status }}
+        </span>
+      </div>
+      <div class="job-details">
+        <span>📅 Applied: {{ job.appliedAt | date:'mediumDate' }}</span>
+        <span>📍 {{ job.city || 'N/A' }}</span>
+      </div>
+    </div>
+  }
+</div>
+
+</div>
+
+<!-- @if(selectedJobId()){
+  <div class="overlay" (click)="closeDrawer()"></div>
+  <app-job-details 
+    [jobId]="selectedJobId()" 
+    (close)="closeDrawer()">
+  </app-job-details>
+} -->

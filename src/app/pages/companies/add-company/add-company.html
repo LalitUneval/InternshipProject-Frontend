@@ -1,0 +1,64 @@
+<div class="form-container">
+
+  <h2>Add Company</h2>
+
+  <!-- @if(isError()){
+  <h3>Error: {{isError()}}</h3>
+} -->
+  <form [formGroup]="companyForm" (ngSubmit)="submitCompany()">
+
+    <!-- Company Name -->
+    <label>Company Name</label>
+    <input type="text" formControlName="companyName" [readonly]="isEditMode" [class.readonly]="isEditMode">
+
+    <div class="error" *ngIf="companyForm.get('name')?.touched && companyForm.get('name')?.invalid">
+      <small *ngIf="companyForm.get('name')?.errors?.['required']">
+        Company name is required
+      </small>
+
+      <small *ngIf="companyForm.get('name')?.errors?.['minlength']">
+        Minimum 3 characters required
+      </small>
+    </div>
+
+
+    <!-- Email -->
+    <label>Email</label>
+    <input type="email" formControlName="contactEmail">
+
+    <div class="error" *ngIf="companyForm.get('email')?.touched && companyForm.get('email')?.invalid">
+
+      <small *ngIf="companyForm.get('email')?.errors?.['required']">
+        Email is required
+      </small>
+
+      <small *ngIf="companyForm.get('email')?.errors?.['email']">
+        Invalid email format
+      </small>
+
+    </div>
+
+
+    <!-- Location -->
+    <label>Location</label>
+    <input type="text" formControlName="location">
+
+    <div class="error" *ngIf="companyForm.get('location')?.touched && companyForm.get('location')?.invalid">
+      <small>Location is required</small>
+    </div>
+
+
+    <!-- Website -->
+    <label>Website</label>
+    <input type="text" formControlName="website">
+
+    <div class="error" *ngIf="companyForm.get('website')?.touched && companyForm.get('website')?.invalid">
+      <small>Website is required</small>
+    </div>
+
+
+    <button type="submit">{{isEditMode ? "Update Company" : "Add Company"}}</button>
+
+  </form>
+
+</div>

@@ -1,0 +1,123 @@
+
+
+<div class="login-page">
+  <div class="login-wrapper">
+
+    <!-- ── Card ── -->
+    <div class="login-card">
+      <div class="login-body">
+
+        <!-- Brand -->
+        <div class="brand">
+          <div class="brand-icon">
+            <i class="bi bi-mortarboard-fill"></i>
+          </div>
+          <div class="brand-title">Welcome back</div>
+          <div class="brand-sub">Trek</div>
+        </div>
+
+        <!-- Decorative gold divider -->
+        <div class="gold-divider">
+          <span></span>
+          <i class="bi bi-diamond-fill"></i>
+          <span></span>
+        </div>
+
+        <!-- Error Banner -->
+        @if (errorMessage) {
+          <div class="error-banner">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <!-- Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="login()" >
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="field-label" for="email">Email</label>
+            <div class="input-wrap">
+              <input
+                type="email"
+                id="email"
+                class="form-field"
+                formControlName="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              />
+              <i class="bi bi-envelope input-icon"></i>
+            </div>
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <div class="field-error">
+                @if (loginForm.get('email')?.errors?.['required']) { Email is required. }
+                @if (loginForm.get('email')?.errors?.['email']) { Please enter a valid email. }
+              </div>
+            }
+          </div>
+
+          <!-- Password -->
+          <div class="mb-1">
+            <label class="field-label" for="password">Password</label>
+            <div class="input-wrap">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                class="form-field"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              />
+              <i class="bi bi-lock input-icon"></i>
+              <button
+                type="button"
+                class="toggle-pw"
+                (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <div class="field-error">Password is required.</div>
+            }
+          </div>
+
+          <!-- Forgot Password -->
+          <a routerLink="/forgot-password" class="forgot-link mt-2 mb-4 d-block">
+            Forgot Password?
+          </a>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="btn-login w-full py-2 rounded-xl text-white font-semibold"
+            style="background-color:#7c3aed;"
+            [disabled]="isLoading"
+          >
+            @if (isLoading) {
+              <div class="btn-spinner"></div>
+              <span>Signing in…</span>
+            } @else {
+              <i class="bi bi-arrow-right-circle"></i>
+              <span>Sign In</span>
+            }
+          </button>
+
+          <!-- Sign Up -->
+          <div class="card-footer-text">
+            Don't have an account?
+            <a routerLink="/signup">Create one</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Page caption -->
+    <div class="page-caption">Secure · Encrypted · Private</div>
+
+  </div>
+</div>

@@ -1,0 +1,199 @@
+/* 🌐 Container */
+.saved-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: "Inter", sans-serif;
+}
+
+/* 🧠 Title */
+.saved-container h2 {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+/* 😔 Empty */
+.no-jobs {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: 40px;
+  font-size: 15px;
+}
+
+/* ===================== */
+/* 🔥 TABS */
+/* ===================== */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: var(--bg-muted);
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+  color: var(--text-primary);
+}
+
+.tabs button:hover {
+  background: var(--bg-surface-hover);
+}
+
+.tabs button.active {
+  background: linear-gradient(135deg, var(--accent), #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ===================== */
+/* 📦 GRID */
+/* ===================== */
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+/* ===================== */
+/* 💼 CARD */
+/* ===================== */
+.job-card {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Left status bar */
+.job-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background: #d1d5db;
+  transition: 0.3s;
+}
+
+/* Hover */
+.job-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ===================== */
+/* 🎯 STATUS COLORS */
+/* ===================== */
+.job-card.applied::before {
+  background: #3b82f6;
+}
+
+.job-card.accepted::before {
+  background: #22c55e;
+}
+
+.job-card.rejected::before {
+  background: #ef4444;
+}
+
+/* ===================== */
+/* 📌 HEADER */
+/* ===================== */
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.job-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.company {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ===================== */
+/* 🏷️ STATUS BADGE */
+/* ===================== */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Badge colors */
+.status-badge.applied {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+.status-badge.accepted {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-badge.rejected {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* ===================== */
+/* 📅 DETAILS */
+/* ===================== */
+.job-details {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.job-details span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ===================== */
+/* 📱 RESPONSIVE */
+/* ===================== */
+@media (max-width: 768px) {
+  .saved-container h2 {
+    font-size: 24px;
+  }
+
+  .job-card {
+    padding: 14px;
+  }
+
+  .job-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-badge {
+    margin-top: 6px;
+  }
+}

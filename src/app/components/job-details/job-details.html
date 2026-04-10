@@ -1,0 +1,45 @@
+@if(job()){
+
+<div class="job-details-panel">
+
+  <div class="header">
+    <h2>{{job()?.title}}</h2>
+    <button (click)="close.emit()">✖</button>
+  </div>
+
+  <h3>{{job()?.companyName}}</h3>
+
+  <p>📍 City: {{job()?.city}}</p>
+
+  <p>
+    💰 Salary:
+    ${{job()?.salaryMin | number}} -
+    ${{job()?.salaryMax | number}}
+  </p>
+
+  <p>
+    🧳 Visa Sponsored:
+    {{job()?.visaSponsored ? 'Yes' : 'No'}}
+  </p>
+
+  <p>
+    🕒 Job Type:
+    {{job()?.jobType}}
+  </p>
+
+  <p>
+    📅 Posted At:
+    {{job()?.postedAt | date:'MMM d, y'}}
+  </p>
+
+  <h4>Job Description</h4>
+
+  <p>{{job()?.description}}</p>
+
+  <button class="apply-btn" [disabled]="isApplying" (click)="applyJob()" *ngIf="role === 'STUDENT'">
+    Apply Now
+  </button>
+
+</div>
+
+}

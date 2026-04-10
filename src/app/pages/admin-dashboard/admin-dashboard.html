@@ -1,0 +1,507 @@
+<div class="dashboard-wrapper">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand-name">Trek<span style="color: var(--accent)">Admin</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-info" (click)="toggleProfile()">
+        <div class="avatar-initials">{{ getInitials(displayName) }}</div>
+        <span class="user-name">{{ displayName }}</span>
+        <i class="bi bi-chevron-down small-icon"></i>
+      </div>
+      @if (profileOpen) {
+      <div class="profile-dropdown">
+        <button class="dropdown-item" (click)="openEditProfile()"><i class="bi bi-person-gear"></i> Edit Profile</button>
+        <button class="dropdown-item"><i class="bi bi-gear"></i> Settings</button>
+        <hr class="dropdown-divider" />
+        <button class="dropdown-item text-danger" (click)="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+
+        <div class="menu-item" [class.active-link]="activeSection === 'overview'" (click)="switchSection('overview')">
+          <i class="bi bi-speedometer2"></i><span>Overview</span>
+        </div>
+
+        <div class="nav-section-label">Manage</div>
+
+        <div class="menu-item" [class.active-link]="activeSection === 'providers'" (click)="switchSection('providers')">
+          <i class="bi bi-tools"></i><span>Service Providers</span>
+        </div>
+
+        <div class="menu-item" [class.active-link]="activeSection === 'applications'" (click)="switchSection('applications')">
+          <i class="bi bi-person-check"></i><span>Applications</span>
+          @if (pendingCount > 0) { <span class="nav-badge">{{ pendingCount }}</span> }
+        </div>
+
+        <!-- User Details sidebar item -->
+        <div class="menu-item" [class.active-link]="activeSection === 'userDetails'" (click)="switchSection('userDetails')">
+          <i class="bi bi-people"></i><span>User Details</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="menu-item theme-toggle-item" (click)="toggleTheme(); $event.stopPropagation()">
+          <i class="bi bi-moon-stars"></i><span>Dark Mode</span>
+          <div class="toggle-switch sidebar-toggle ms-auto">
+            <div class="toggle-slider-track" [class.active]="isDarkMode">
+              <div class="toggle-slider-thumb">
+                <i class="bi" [class.bi-moon-fill]="isDarkMode" [class.bi-sun-fill]="!isDarkMode"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Page content -->
+    <div class="page-content">
+      @if (showProfileBanner) {
+      <div class="profile-banner" (click)="openCreateProfile()">
+        <div class="banner-left">
+          <i class="bi bi-exclamation-circle banner-icon"></i>
+          <div>
+            <span class="banner-title">Complete Your Admin Profile</span>
+            <span class="banner-desc">Set up your profile to verify your admin account.</span>
+          </div>
+        </div>
+        <button class="banner-btn" (click)="$event.stopPropagation(); openCreateProfile()">
+          Complete Now <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+      }
+
+      <!-- Overview -->
+      @if (activeSection === 'overview') {
+      <div class="admin-dashboard">
+        <div class="page-heading">
+          <h2>Admin Dashboard</h2>
+          <p>Welcome back, {{ displayName }}. Here's what's happening.</p>
+        </div>
+        <div class="overview-cards">
+          <div class="ov-card">
+            <div class="ov-icon purple"><i class="bi bi-tools"></i></div>
+            <div class="ov-value">{{ providers.length }}</div>
+            <div class="ov-label">Service Providers</div>
+          </div>
+          <div class="ov-card">
+            <div class="ov-icon green"><i class="bi bi-patch-check"></i></div>
+            <div class="ov-value">{{ providers | verifiedCount }}</div>
+            <div class="ov-label">Verified Providers</div>
+          </div>
+          <div class="ov-card">
+            <div class="ov-icon amber"><i class="bi bi-hourglass-split"></i></div>
+            <div class="ov-value">{{ pendingCount }}</div>
+            <div class="ov-label">Pending Applications</div>
+          </div>
+          <div class="ov-card">
+            <div class="ov-icon red"><i class="bi bi-person-check"></i></div>
+            <div class="ov-value">{{ applications.length }}</div>
+            <div class="ov-label">Total Applications</div>
+          </div>
+        </div>
+        @if (pendingCount > 0) {
+        <div class="alert-warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          You have <strong>{{ pendingCount }}</strong> pending application(s) waiting for review.
+          <button class="btn-link" (click)="switchSection('applications')">Review now →</button>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Service provider -->
+      @if (activeSection === 'providers') {
+      <div class="admin-section">
+        <div class="admin-toolbar">
+          <h3 class="admin-section-title"><i class="bi bi-tools"></i> Service Providers</h3>
+          <button class="btn-primary" (click)="openAddModal()"><i class="bi bi-plus-circle"></i> Add Provider</button>
+        </div>
+        @if (formSuccess) { <div class="alert-success"><i class="bi bi-check-circle-fill"></i> {{ formSuccess }}</div> }
+        @if (providersLoading) { <div class="loading-spinner"><div class="spinner"></div></div> }
+        @if (!providersLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Name</th><th>Type</th><th>City</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              @for (p of providers; track p.id) {
+              <tr>
+                <td class="td-name">{{ p.name }}</td>
+                <td>{{ labelOf(p.serviceType) }}</td>
+                <td>{{ p.city }}</td>
+                <td>{{ p.rating | number:'1.1-1' }} ★</td>
+                <td>
+                  <button class="verify-toggle" [class.is-verified]="p.isVerified" (click)="toggleVerified(p)" [title]="p.isVerified ? 'Revoke verification' : 'Verify provider'">
+                    @if (p.isVerified) { <i class="bi bi-patch-check-fill"></i> Verified } @else { <i class="bi bi-patch-question"></i> Pending }
+                  </button>
+                </td>
+                <td class="td-actions">
+                  <button class="btn-outline btn-sm" (click)="openEditModal(p)"><i class="bi bi-pencil"></i> Edit</button>
+                  <button class="btn-danger btn-sm" (click)="deleteProvider(p)"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              }
+              @if (providers.length === 0) {
+              <tr><td colspan="6" class="td-empty"><i class="bi bi-tools"></i> No service providers yet. Add one to get started.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </div>
+      }
+
+      <!--Application  -->
+      @if (activeSection === 'applications') {
+      <div class="admin-section">
+        <div class="admin-toolbar">
+          <h3 class="admin-section-title">
+            <i class="bi bi-person-check"></i> Provider Applications
+            @if (pendingCount > 0) { <span class="title-badge">{{ pendingCount }} pending</span> }
+          </h3>
+          <button class="btn-outline btn-sm" (click)="applicationsLoaded = false; loadApplications()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+        @if (applicationsLoading) { <div class="loading-spinner"><div class="spinner"></div></div> }
+        @if (!applicationsLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Applicant ID</th><th>Business Name</th><th>Service</th><th>City</th><th>Applied</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              @for (app of applications; track app.id) {
+              <tr>
+                <td>{{ app.applicantUserId }}</td>
+                <td class="td-name">{{ app.name }}</td>
+                <td>{{ labelOf(app.serviceType) }}</td>
+                <td>{{ app.city }}</td>
+                <td>{{ formatDate(app.appliedAt) }}</td>
+                <td><span class="status-badge" [ngClass]="getStatusClass(app.status)">{{ app.status }}</span></td>
+                <td class="td-actions">
+                  @if (app.status === 'PENDING') {
+                  <button class="btn-approve btn-sm" (click)="openReviewModal(app, 'approve')"><i class="bi bi-check-lg"></i> Approve</button>
+                  <button class="btn-danger btn-sm" (click)="openReviewModal(app, 'reject')"><i class="bi bi-x-lg"></i></button>
+                  } @else {
+                  <span class="reviewed-label"><i class="bi bi-check2-all"></i> Reviewed @if (app.reviewedAt) { <span class="text-muted">· {{ formatDate(app.reviewedAt) }}</span> }</span>
+                  }
+                </td>
+              </tr>
+              }
+              @if (applications.length === 0) {
+              <tr><td colspan="7" class="td-empty"><i class="bi bi-inbox"></i> No applications yet.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </div>
+      }
+
+      <!--  User Details  -->
+      @if (activeSection === 'userDetails') {
+      <div class="admin-section">
+
+        <!-- Toolbar -->
+        <div class="admin-toolbar">
+          <h3 class="admin-section-title">
+            <i class="bi bi-people"></i> User Details
+            @if (!isSearchMode) {
+            <span class="title-badge">{{ usersTotalElements }} total</span>
+            }
+          </h3>
+          <button class="btn-outline btn-sm" (click)="usersLoaded = false; loadUsers(0)">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="user-search-wrap">
+          <div class="user-search-box" [class.is-active]="searchName.length > 0">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="user-search-input"
+              placeholder="Search user by name…"
+              [value]="searchName"
+              (input)="onSearchInput($any($event.target).value)"
+            />
+            @if (searchName.length > 0) {
+            <button class="search-clear-btn" (click)="clearSearch()" title="Clear search">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+            }
+          </div>
+          @if (isSearchMode) {
+          <div class="search-mode-indicator">
+            <i class="bi bi-funnel-fill"></i>
+            Showing results for "<strong>{{ searchName }}</strong>"
+            <button class="btn-link" (click)="clearSearch()">Clear →</button>
+          </div>
+          }
+        </div>
+
+        <!-- Loading -->
+        @if (usersLoading || searchLoading) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+        }
+
+        <!-- Search Error -->
+        @if (searchError) {
+        <div class="alert-error"><i class="bi bi-exclamation-circle"></i> {{ searchError }}</div>
+        }
+
+        <!-- Search Result Table -->
+        @if (isSearchMode && !searchLoading && !searchError) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>City</th>
+                <th>Phone</th>
+                <th class="th-center">Activate</th>
+                <th class="th-center">Deactivate</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of searchResults; track u.id; let i = $index) {
+              <tr>
+                <td class="td-srno">{{ i + 1 }}</td>
+                <td class="td-name">{{ u.fullName }}</td>
+                <td>{{ u.currentCity || '—' }}</td>
+                <td>{{ u.phoneNumber || '—' }}</td>
+                <!-- Activate checkbox -->
+                <td class="td-center">
+                  <button
+                    class="action-toggle activate-btn"
+                    [class.is-loading]="userActionLoading[u.id]"
+                    [disabled]="userActionLoading[u.id] || getUserActive(u.id)"
+                    (click)="activateUser(u.id)"
+                    title="Activate user"
+                  >
+                    @if (userActionLoading[u.id]) { <i class="bi bi-arrow-repeat spin"></i> }
+                    @else { <i class="bi bi-check-circle{{ getUserActive(u.id) ? '-fill' : '' }}"></i> }
+                  </button>
+                </td>
+                <!-- Deactivate checkbox -->
+                <td class="td-center">
+                  <button
+                    class="action-toggle deactivate-btn"
+                    [class.is-loading]="userActionLoading[u.id]"
+                    [disabled]="userActionLoading[u.id] || !getUserActive(u.id)"
+                    (click)="deactivateUser(u.id)"
+                    title="Deactivate user"
+                  >
+                    @if (userActionLoading[u.id]) { <i class="bi bi-arrow-repeat spin"></i> }
+                    @else { <i class="bi bi-slash-circle{{ !getUserActive(u.id) ? '-fill' : '' }}"></i> }
+                  </button>
+                </td>
+              </tr>
+              }
+              @if (searchResults.length === 0) {
+              <tr>
+                <td colspan="6" class="td-empty">
+                  <i class="bi bi-person-x"></i> No users found for "{{ searchName }}".
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+
+        <!--  Paginated User Table  -->
+        @if (!isSearchMode && !usersLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User Email</th>
+                <th>Role</th>
+                <th class="th-center">Activate</th>
+                <th class="th-center">Deactivate</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of users; track u.id; let i = $index) {
+              <tr [class.row-inactive]="!u.isActive">
+                <td class="td-srno">{{ usersPage * usersPageSize + i + 1 }}</td>
+                <td class="td-name">
+                  {{ u.email }}
+                  @if (!u.isActive) {
+                  <span class="inactive-chip"><i class="bi bi-slash-circle"></i> Inactive</span>
+                  }
+                </td>
+                <td>
+                  <span class="role-badge role-{{ u.role | lowercase }}">{{ u.role }}</span>
+                </td>
+                <!-- Activate -->
+                <td class="td-center">
+                  <button
+                    class="action-toggle activate-btn"
+                    [disabled]="userActionLoading[u.id] || u.isActive"
+                    (click)="activateUser(u.id)"
+                    title="{{ u.isActive ? 'Already active' : 'Activate user' }}"
+                  >
+                    @if (userActionLoading[u.id]) { <i class="bi bi-arrow-repeat spin"></i> }
+                    @else { <i class="bi bi-check-circle{{ u.isActive ? '-fill' : '' }}"></i> }
+                  </button>
+                </td>
+                <!-- Deactivate -->
+                <td class="td-center">
+                  <button
+                    class="action-toggle deactivate-btn"
+                    [disabled]="userActionLoading[u.id] || !u.isActive"
+                    (click)="deactivateUser(u.id)"
+                    title="{{ !u.isActive ? 'Already inactive' : 'Deactivate user' }}"
+                  >
+                    @if (userActionLoading[u.id]) { <i class="bi bi-arrow-repeat spin"></i> }
+                    @else { <i class="bi bi-slash-circle{{ !u.isActive ? '-fill' : '' }}"></i> }
+                  </button>
+                </td>
+              </tr>
+              }
+              @if (users.length === 0) {
+              <tr>
+                <td colspan="5" class="td-empty">
+                  <i class="bi bi-people"></i> No users found.
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        @if (usersTotalPages > 1) {
+        <div class="pagination-bar">
+          <span class="pagination-info">
+            Page {{ usersPage + 1 }} of {{ usersTotalPages }}
+            <span class="text-muted">({{ usersTotalElements }} users)</span>
+          </span>
+          <div class="pagination-controls">
+            <button class="page-btn" [disabled]="usersPage === 0" (click)="goToPage(0)" title="First page">
+              <i class="bi bi-chevron-double-left"></i>
+            </button>
+            <button class="page-btn" [disabled]="usersPage === 0" (click)="goToPage(usersPage - 1)" title="Previous page">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            @for (p of pageRange; track p) {
+            <button class="page-btn page-number" [class.active]="p === usersPage" (click)="goToPage(p)">
+              {{ p + 1 }}
+            </button>
+            }
+            <button class="page-btn" [disabled]="usersPage === usersTotalPages - 1" (click)="goToPage(usersPage + 1)" title="Next page">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+            <button class="page-btn" [disabled]="usersPage === usersTotalPages - 1" (click)="goToPage(usersTotalPages - 1)" title="Last page">
+              <i class="bi bi-chevron-double-right"></i>
+            </button>
+          </div>
+        </div>
+        }
+        }
+
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Provider Model -->
+@if (showAddModal) {
+<div class="overlay" (click)="showAddModal = false">
+  <div class="detail-modal" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="showAddModal = false"><i class="bi bi-x-lg"></i></button>
+    <h3 class="form-title"><i class="bi bi-plus-circle"></i> Add Service Provider</h3>
+    @if (formError) { <div class="alert-error">{{ formError }}</div> }
+    <div class="form-grid">
+      <div class="form-group"><label>Name *</label><input type="text" class="form-input" [(ngModel)]="providerForm.name" placeholder="Provider name" /></div>
+      <div class="form-group"><label>Service Type *</label><select class="form-input" [(ngModel)]="providerForm.serviceType">@for (t of serviceTypes; track t) {<option [value]="t">{{ labelOf(t) }}</option>}</select></div>
+      <div class="form-group"><label>City *</label><input type="text" class="form-input" [(ngModel)]="providerForm.city" placeholder="City" /></div>
+      <div class="form-group"><label>Contact Number</label><input type="text" class="form-input" [(ngModel)]="providerForm.contactNumber" /></div>
+      <div class="form-group full-span"><label>Email</label><input type="email" class="form-input" [(ngModel)]="providerForm.email" /></div>
+      <div class="form-group full-span"><label>Description</label><textarea class="form-input" rows="3" [(ngModel)]="providerForm.description" placeholder="Describe the service…"></textarea></div>
+      <div class="form-group check-row full-span"><label class="check-label"><input type="checkbox" [(ngModel)]="providerForm.isVerified" /> Mark as Verified immediately</label></div>
+    </div>
+    <div class="form-actions" style="margin-top: 20px">
+      <button class="btn-primary" (click)="submitAddProvider()" [disabled]="formLoading">{{ formLoading ? 'Adding…' : 'Add Provider' }}</button>
+      <button class="btn-outline" (click)="showAddModal = false">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+<!--  Edit Provider Model  -->
+@if (showEditModal && editingProvider) {
+<div class="overlay" (click)="showEditModal = false">
+  <div class="detail-modal small-modal" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="showEditModal = false"><i class="bi bi-x-lg"></i></button>
+    <h3 class="form-title"><i class="bi bi-pencil"></i> Edit: {{ editingProvider.name }}</h3>
+    @if (formError) { <div class="alert-error">{{ formError }}</div> }
+    <div class="form-group" style="margin-bottom: 14px"><label>Contact Number</label><input type="text" class="form-input" [(ngModel)]="editForm.contactNumber" /></div>
+    <div class="form-group" style="margin-bottom: 14px"><label>Email</label><input type="email" class="form-input" [(ngModel)]="editForm.email" /></div>
+    <div class="form-group" style="margin-bottom: 14px"><label>Description</label><textarea class="form-input" rows="3" [(ngModel)]="editForm.description"></textarea></div>
+    <div class="form-group check-row" style="margin-bottom: 20px"><label class="check-label"><input type="checkbox" [(ngModel)]="editForm.isVerified" /> Verified</label></div>
+    <div class="form-actions">
+      <button class="btn-primary" (click)="submitEditProvider()" [disabled]="formLoading">{{ formLoading ? 'Saving…' : 'Save Changes' }}</button>
+      <button class="btn-outline" (click)="showEditModal = false">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+<!--  Review Application Confirm  -->
+@if (reviewNoteModal && reviewingApp) {
+<div class="overlay" (click)="reviewNoteModal = false">
+  <div class="detail-modal small-modal" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="reviewNoteModal = false"><i class="bi bi-x-lg"></i></button>
+    <h3 class="form-title">
+      @if (reviewAction === 'approve') { <i class="bi bi-check-circle" style="color: #10b981"></i> Approve Application }
+      @else { <i class="bi bi-x-circle" style="color: #dc2626"></i> Reject Application }
+    </h3>
+    <div class="review-app-info">
+      <span class="review-app-name">{{ reviewingApp.name }}</span>
+      <span class="review-app-meta">{{ labelOf(reviewingApp.serviceType) }} · {{ reviewingApp.city }}</span>
+    </div>
+    @if (reviewAction === 'approve') {
+    <div class="alert-info"><i class="bi bi-info-circle-fill"></i> Approving will automatically create a <strong>verified service provider</strong> from this application.</div>
+    }
+    <div class="form-group" style="margin-top: 14px; margin-bottom: 20px">
+      <label>Note to applicant (optional)</label>
+      <textarea class="form-input" rows="3" [(ngModel)]="reviewNote"
+        [placeholder]="reviewAction === 'approve' ? 'e.g. Welcome aboard! Your profile is now live.' : 'e.g. Please reapply with full contact details.'">
+      </textarea>
+    </div>
+    <div class="form-actions">
+      @if (reviewAction === 'approve') {
+      <button class="btn-approve" (click)="submitReview()" [disabled]="reviewLoading">{{ reviewLoading ? 'Approving…' : '✓ Confirm Approval' }}</button>
+      } @else {
+      <button class="btn-danger" (click)="submitReview()" [disabled]="reviewLoading">{{ reviewLoading ? 'Rejecting…' : '✕ Confirm Rejection' }}</button>
+      }
+      <button class="btn-outline" (click)="reviewNoteModal = false">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+<!--  Profile Modal  -->
+@if (showProfileModal) {
+<app-profile-modal
+  [isEditMode]="isEditMode"
+  [existingProfile]="existingProfile"
+  (closeModal)="closeProfileModal()"
+  (profileSaved)="onProfileSaved()">
+</app-profile-modal>
+}

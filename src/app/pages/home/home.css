@@ -1,0 +1,148 @@
+/* ── home.css ────────────────────────────────── */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 4px;
+}
+
+.page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── STAT CARDS ──────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid #b8922a;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.stat-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── BOTTOM CARDS ROW ────────────────────────── */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Card container */
+.card {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Job item */
+.job-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.job-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.job-company {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Activity item */
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.activity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Empty state */
+.empty-msg {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 640px) {
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+}

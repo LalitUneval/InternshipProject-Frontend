@@ -1,0 +1,87 @@
+
+<div class="home-page">
+
+  <!-- Page title -->
+  <div class="page-header">
+    <h2 class="page-title">Dashboard</h2>
+    <p class="page-subtitle">Welcome back! Here's what's happening.</p>
+  </div>
+
+  <!-- loading state -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <p class="empty-msg">Loading...</p>
+    </div>
+  }
+
+  <!-- content (only shown after load)  -->
+  @if (!isLoading) {
+
+    <!-- stat card show -->
+    <div class="stats-row">
+      @for (card of stats; track card.title) {
+        <div class="stat-card">
+          <div class="stat-value" [style.color]="card.color">{{ card.value }}</div>
+          <div class="stat-title">{{ card.title }}</div>
+          <div class="stat-desc">{{ card.description }}</div>
+        </div>
+      }
+
+      @if (stats.length === 0) {
+        <p class="empty-msg">No stats to show.</p>
+      }
+    </div>
+
+
+    <div class="bottom-row">
+
+      <!-- Recommended Jobs card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-briefcase"></i> Recommended Jobs
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @for (job of jobs; track job.title) {
+            <div class="job-item">
+              <div class="job-title">{{ job.title }}</div>
+              <div class="job-company">{{ job.company }}</div>
+            </div>
+          }
+
+          @if (jobs.length === 0) {
+            <p class="empty-msg">No jobs to show.</p>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Activity card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="bi bi-clock-history"></i> Recent Activity
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @for (item of activities; track item.title) {
+            <div class="activity-item">
+              <span class="activity-dot" [style.backgroundColor]="item.color"></span>
+              <span class="activity-text">{{ item.title }}</span>
+            </div>
+          }
+
+          @if (activities.length === 0) {
+            <p class="empty-msg">No recent activity.</p>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  }
+
+
+</div>  

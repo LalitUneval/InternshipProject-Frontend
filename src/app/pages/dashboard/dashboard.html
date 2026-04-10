@@ -1,0 +1,199 @@
+<!-- dashboard.html -->
+
+<div class="dashboard-wrapper">
+
+  <!--  Profile Incomplte banner  -->
+  @if (showProfileBanner) {
+  <div class="profile-banner" (click)="openCreateModal()">
+    <div class="banner-left">
+      <i class="bi bi-person-exclamation banner-icon"></i>
+      <div>
+        <span class="banner-title">Complete your profile</span>
+        <span class="banner-desc">Add your details to access all services</span>
+      </div>
+    </div>
+    <button class="banner-btn">
+      <i class="bi bi-arrow-right-circle"></i>
+      Complete Now
+    </button>
+  </div>
+  }
+
+  <!--  Top Navbar  -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+      <span class="brand-name">Trek</span>
+    </div>
+<div class="topbar-right">
+  <!-- Backdrop: invisible full-screen div, closes dropdown when clicked -->
+  @if (profileOpen) {
+    <div class="dropdown-backdrop" (click)="toggleProfile()"></div>
+  }
+
+  <div class="user-info" (click)="toggleProfile()">
+    <div class="avatar-initials">{{ getInitials(displayName) }}</div>
+    <span class="user-name">{{ displayName }}</span>
+    <i class="bi bi-chevron-down small-icon"></i>
+  </div>
+
+  @if (profileOpen) {
+    <div class="profile-dropdown">
+      <button class="dropdown-item" (click)="openEditModal()">
+        <i class="bi bi-person-gear"></i> Edit Profile
+      </button>
+      <button class="dropdown-item">
+        <i class="bi bi-gear"></i> Settings
+      </button>
+      <hr class="dropdown-divider">
+      <button class="dropdown-item text-danger" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  }
+</div>
+  </div>
+
+  <!-- Main Layout  -->
+  <div class="main-layout">
+
+    @if (sidebarOpen) {
+    <div class="sidebar">
+      <nav class="sidebar-nav">
+
+        <a routerLink="home" routerLinkActive="active-link" class="menu-item">
+          <i class="bi bi-house"></i><span>Home</span>
+        </a>
+
+        <a routerLink="about" routerLinkActive="active-link" class="menu-item">
+          <i class="bi bi-info-circle"></i><span>About</span>
+        </a>
+
+        <a routerLink="contact" routerLinkActive="active-link" class="menu-item">
+          <i class="bi bi-envelope"></i><span>Contact</span>
+        </a>
+
+        <!-- Services dropdown -->
+        <div class="menu-item" (click)="toggleServices()">
+          <i class="bi bi-grid"></i>
+          <span>Services</span>
+          <i class="bi ms-auto"
+            [class.bi-chevron-down]="!servicesOpen"
+            [class.bi-chevron-up]="servicesOpen">
+          </i>
+        </div>
+
+        @if (servicesOpen) {
+        <div class="submenu-group">
+
+          <a routerLink="housing" routerLinkActive="active-link" class="submenu-item">
+            <i class="bi bi-house-door"></i> Housing
+          </a>
+
+         
+
+      
+          <a routerLink="community" routerLinkActive="active-link" class="submenu-item">
+            <i class="bi bi-people"></i> Community
+          </a>
+          
+          <a routerLink="services" routerLinkActive="active-link" class="submenu-item">
+            <i class="bi bi-tools"></i> Service Providers
+          </a>
+           <div class="menu-group">
+            <!-- Parent item -->
+            <div class="menu-item" (click)="toggleMenu('jobs')">
+              <i class="bi bi-briefcase"></i>
+              <span>Jobs</span>
+
+              <i
+                class="bi ms-auto"
+                [class.bi-chevron-down]="menuOpen !== 'jobs'"
+                [class.bi-chevron-up]="menuOpen === 'jobs'"
+              >
+              </i>
+            </div>
+
+            <!-- Submenu -->
+            <div class="submenu" *ngIf="menuOpen === 'jobs'">
+              <a routerLink="/dashboard/jobs" routerLinkActive="active-sub">
+                All Jobs
+              </a>
+
+              <a
+                *ngIf="role === 'STUDENT'"
+                routerLink="/dashboard/jobs/saved"
+                routerLinkActive="active-sub"
+              >
+                Saved Jobs
+              </a>
+
+              <a
+                *ngIf="role === 'STUDENT'"
+                routerLink="/dashboard/jobs/applyed"
+                routerLinkActive="active-sub"
+              >
+                Applied Jobs
+              </a>
+
+              <a routerLink="/dashboard/company" routerLinkActive="active-sub">
+                Companies
+              </a>
+
+              <a
+                *ngIf="role === 'RECRUITER' || role === 'ADMIN'"
+                routerLink="/dashboard/jobs/job-applications"
+                routerLinkActive="active-sub"
+              >
+                Applications
+              </a>
+            </div>
+          </div>
+
+        </div>
+        }
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="menu-item theme-toggle-item" (click)="toggleTheme()">
+          <i class="bi bi-moon-stars"></i><span>Dark Mode</span>
+          <label class="toggle-switch sidebar-toggle ms-auto" (click)="$event.stopPropagation()">
+            <input type="checkbox" [checked]="isDarkMode" (change)="toggleTheme()" />
+            <span class="toggle-slider">
+              <i class="bi"
+                [class.bi-moon-fill]="isDarkMode"
+                [class.bi-sun-fill]="!isDarkMode">
+              </i>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+    }
+
+    @if (!sidebarOpen) {
+    <div class="sidebar-collapsed"></div>
+    }
+
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</div>
+
+<app-ai-chat [skills]="exsitingSkill"></app-ai-chat>
+
+<!-- ── Profile Model -->
+@if (showProfileModal) {
+<app-profile-modal
+  [isEditMode]="isEditMode"
+  [existingProfile]="existingProfile"
+  (profileSaved)="onProfileSaved($event)"
+  (closeModal)="onModalClosed()">
+</app-profile-modal>
+}

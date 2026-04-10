@@ -1,0 +1,67 @@
+/* src/app/components/community/community.css */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.community-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Tab Bar ─────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 16px 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+  bottom: -1px;
+}
+
+.tab-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-muted);
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--bg-page);
+}
+
+/* ── Tab Content ─────────────────────────────────────────────── */
+.tab-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

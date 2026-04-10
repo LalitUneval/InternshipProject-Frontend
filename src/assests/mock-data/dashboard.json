@@ -1,0 +1,22 @@
+{
+  "stats": [
+    {
+      "value": 12,
+      "title": "Job Applications",
+      "description": "3 this week",
+      "color": "text-green-600"
+    }
+  ],
+  "jobs": [
+    {
+      "title": "Senior Software Engineer",
+      "company": "Google • Remote"
+    }
+  ],
+  "activities": [
+    {
+      "title": "Application Submitted",
+      "color": "bg-green-400"
+    }
+  ]
+}

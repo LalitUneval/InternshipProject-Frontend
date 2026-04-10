@@ -1,0 +1,126 @@
+/* Container */
+.job-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background: var(--bg-page);
+  min-height: 100vh;
+}
+
+/* Card */
+.form-card {
+  background: var(--bg-surface);
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Title */
+.form-card h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+/* Inputs */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-input);
+  font-size: 14px;
+  transition: 0.3s;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* Focus effect */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* Textarea */
+textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+/* Error text */
+small {
+  color: var(--danger-text);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Row (salary fields) */
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* Checkbox */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: var(--accent-dark);
+}
+
+button:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-card {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+}

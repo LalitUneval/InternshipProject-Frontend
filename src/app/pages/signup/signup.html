@@ -1,0 +1,144 @@
+
+
+<div class="signup-page">
+  <div class="su-wrapper">
+    <div class="su-card">
+      <div class="su-body">
+
+        <!-- Brand -->
+        <div class="text-center mb-0">
+          <div class="brand-icon"><i class="bi bi-person-plus-fill"></i></div>
+          <div class="brand-title">Create Account</div>
+          <div class="brand-sub">Student Portal</div>
+        </div>
+
+        <div class="gold-divider" style="margin-top:1.5rem">
+          <span></span><i class="bi bi-diamond-fill"></i><span></span>
+        </div>
+
+        <!-- Error banner -->
+        @if (errorMessage) {
+          <div class="error-banner">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <form [formGroup]="signupForm" (ngSubmit)="register()" novalidate>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="field-label" for="email">Email Address</label>
+            <div class="input-wrap">
+              <input
+                type="email"
+                id="email"
+                class="form-field"
+                formControlName="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                [class.is-invalid]="signupForm.get('email')?.invalid && signupForm.get('email')?.touched"
+              />
+              <i class="bi bi-envelope input-icon"></i>
+            </div>
+            @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+              <div class="field-error">Please enter a valid email address.</div>
+            }
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="field-label" for="password">Password</label>
+            <div class="input-wrap">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                class="form-field"
+                formControlName="password"
+                placeholder="Min 8 characters"
+                autocomplete="new-password"
+                [class.is-invalid]="signupForm.get('password')?.invalid && signupForm.get('password')?.touched"
+              />
+              <i class="bi bi-lock input-icon"></i>
+              <button type="button" class="toggle-pw" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Hide' : 'Show'">
+                <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+
+            <!-- Strength bar -->
+            <div class="pw-strength">
+              <div class="strength-bar">
+                <div class="strength-fill"
+                     [style.width]="strengthPercent"
+                     [style.background]="strengthColor">
+                </div>
+              </div>
+              <span class="strength-label" [style.color]="strengthColor">{{ strengthLabel }}</span>
+            </div>
+
+            @if (signupForm.get('password')?.invalid && signupForm.get('password')?.touched) {
+              <div class="field-error">
+                @if (signupForm.get('password')?.errors?.['minlength']) { Minimum 8 characters required. }
+                @if (signupForm.get('password')?.errors?.['pattern']) { Must include uppercase, lowercase & number. }
+              </div>
+            }
+          </div>
+
+          <!-- Role -->
+          <div class="mb-4">
+            <label class="field-label">Select Role</label>
+            <div class="role-grid">
+              <div>
+                <!-- Student -->
+                <input type="radio" id="roleStudent" value="STUDENT" class="role-option" formControlName="role"/>
+                <label for="roleStudent" class="role-label">
+                  <i class="bi bi-mortarboard"></i> Student
+                </label>
+              </div>
+              <div>
+               <input type="radio" id="rolePro" value="PROFESSIONAL" class="role-option" formControlName="role"/>
+                <label for="rolePro" class="role-label">
+                  <i class="bi bi-briefcase"></i> Professional
+                </label>
+              </div>
+              <div>
+                <input type="radio" id="roleRec" value="RECRUITER" class="role-option" formControlName="role"/>
+
+                <label for="roleRec" class="role-label">
+                  <i class="bi bi-search-heart"></i> Recruiter
+                </label>
+              </div>
+              <div>
+                <input type="radio" id="roleAdmin" value="ADMIN" class="role-option" formControlName="role"/>
+                <label for="roleAdmin" class="role-label">
+                  <i class="bi bi-shield-check"></i> Admin
+                </label>
+              </div>
+            </div>
+            @if (signupForm.get('role')?.invalid && signupForm.get('role')?.touched) {
+              <div class="field-error">Please select a role.</div>
+            }
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-submit" [disabled]="isLoading">
+            @if (isLoading) {
+              <div class="btn-spinner"></div>
+              <span>Creating Account…</span>
+            } @else {
+              <i class="bi bi-person-check"></i>
+              <span>Create Account</span>
+            }
+          </button>
+
+          <div class="card-footer-text">
+            Already have an account?
+            <a routerLink="/login">Sign in</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+    <div class="page-caption">Secure · Encrypted · Private</div>
+  </div>
+</div>

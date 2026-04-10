@@ -1,0 +1,44 @@
+.form-container {
+  width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: var(--bg-surface);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid var(--border-input);
+  border-radius: 5px;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error {
+  color: var(--danger-text);
+  font-size: 12px;
+}
+
+/* disable company name at update time */
+.readonly {
+  background: var(--bg-muted);
+  cursor: not-allowed;
+}

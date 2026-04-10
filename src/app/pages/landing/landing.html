@@ -1,0 +1,232 @@
+
+<div class="landing">
+
+  <!-- Navbar  -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="brand-icon">✈</span>
+        <span class="brand-name">Trek</span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-ghost" (click)="goToLogin()">Log in</button>
+        <button class="btn-primary" (click)="goToSignup()">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Your journey starts here
+      </div>
+      <h1 class="hero-title">
+        A new country.<br/>
+        <span class="title-accent">A familiar home.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Trek helps immigrants find housing, land jobs, and build community
+        in their new country — all from one platform.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-hero-primary" (click)="goToSignup()">
+          Start for free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+        <button class="btn-hero-ghost" (click)="goToLogin()">
+          I already have an account
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">10k+</span>
+          <span class="stat-label">Immigrants helped</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">50+</span>
+          <span class="stat-label">Countries</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">3k+</span>
+          <span class="stat-label">Housing listings</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-label">What we offer</div>
+      <h2 class="section-title">Everything you need to settle in</h2>
+      <p class="section-sub">
+        Moving to a new country is hard. Trek makes it simpler by bringing
+        housing, jobs, and community into one place.
+      </p>
+      <div class="features-grid">
+        @for (f of features; track f.title) {
+          <div class="feature-card">
+            <div class="feature-icon">{{ f.icon }}</div>
+            <h3 class="feature-title">{{ f.title }}</h3>
+            <p class="feature-desc">{{ f.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+
+  <section class="how" id="how">
+    <div class="section-inner">
+      <div class="section-label">How it works</div>
+      <h2 class="section-title">From arrival to belonging</h2>
+      <p class="section-sub">Three simple steps to start your new life with confidence.</p>
+      <div class="steps">
+        @for (s of steps; track s.num) {
+          <div class="step">
+            <div class="step-num">{{ s.num }}</div>
+            <div class="step-content">
+              <h3 class="step-title">{{ s.title }}</h3>
+              <p class="step-desc">{{ s.desc }}</p>
+            </div>
+            <div class="step-line"></div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!--  Testimonials -->
+  <section class="testimonials" id="testimonials">
+    <div class="section-inner">
+      <div class="section-label">Stories</div>
+      <h2 class="section-title">Real people. Real journeys.</h2>
+      <div class="testimonials-grid">
+        @for (t of testimonials; track t.name) {
+          <div class="testimonial-card">
+            <div class="t-quote">"</div>
+            <p class="t-text">{{ t.text }}</p>
+            <div class="t-author">
+              <div class="t-avatar">{{ t.initials }}</div>
+              <div class="t-info">
+                <div class="t-name">{{ t.name }}</div>
+                <div class="t-from">{{ t.from }}</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!--  Cta banner  -->
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <h2 class="cta-title">Ready to start your journey?</h2>
+      <p class="cta-sub">Join thousands of immigrants who found their footing with Trek.</p>
+      <button class="btn-hero-primary" (click)="goToSignup()">
+        Create your free account
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+
+      <!-- Brand -->
+      <div class="footer-brand-col">
+        <div class="footer-brand">
+          <span class="brand-icon">✈</span>
+          <span class="brand-name">Trek</span>
+        </div>
+        <p class="footer-tagline">Helping immigrants find home.</p>
+      </div>
+
+      <!-- Contact details -->
+      <div class="footer-contact">
+        <div class="footer-contact-title">Contact Us</div>
+
+        <a class="footer-contact-item" href="mailto:hello@trek.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          hello&#64;trek.com
+        </a>
+
+        <a class="footer-contact-item" href="tel:+11234567890">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.55 5.55l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          +1 (123) 456-7890
+        </a>
+      </div>
+
+      <!-- Social links -->
+      <div class="footer-social-col">
+        <div class="footer-contact-title">Follow Us</div>
+        <div class="footer-socials">
+
+          <a class="social-link" href="https://twitter.com/trekapp" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            Twitter
+          </a>
+
+          <a class="social-link" href="https://instagram.com/trekapp" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+            Instagram
+          </a>
+
+          <a class="social-link" href="https://linkedin.com/company/trekapp" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+            LinkedIn
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Nav links -->
+      <div class="footer-nav-col">
+        <div class="footer-contact-title">Quick Links</div>
+        <div class="footer-links">
+          <button class="footer-link" (click)="goToLogin()">Login</button>
+          <button class="footer-link" (click)="goToSignup()">Sign Up</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Trek. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div>

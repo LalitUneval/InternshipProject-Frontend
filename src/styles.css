@@ -1,0 +1,88 @@
+/* Global styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── CSS Custom Properties (Light Mode — Default) ── */
+:root {
+  --bg-body:          #f5f0e8;
+  --bg-surface:       #ffffff;
+  --bg-surface-hover: #f9fafb;
+  --bg-muted:         #f3f4f6;
+  --bg-page:          #f3f4f6;
+
+  --text-primary:     #1f2937;
+  --text-secondary:   #374151;
+  --text-muted:       #6b7280;
+  --text-faint:       #9ca3af;
+
+  --border-color:     #e5e7eb;
+  --border-input:     #e5e7eb;
+
+  --accent:           #6d28d9;
+  --accent-light:     #ede9fe;
+  --accent-dark:      #5b21b6;
+
+  --shadow-sm:        0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:        0 2px 10px rgba(0, 0, 0, 0.06);
+  --shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.12);
+
+  --success-bg:       #d1fae5;
+  --success-text:     #065f46;
+  --danger-bg:        #fee2e2;
+  --danger-text:      #991b1b;
+  --warning-bg:       #fef3c7;
+  --warning-text:     #92400e;
+  --text-inverse:     #ffffff;
+  --info-bg:          #dbeafe;
+  --info-text:        #1e40af;
+}
+
+/* ── Dark Mode ────────────────────────────────────── */
+body.dark-mode {
+  --bg-body:          #0f172a;
+  --bg-surface:       #1e293b;
+  --bg-surface-hover: #334155;
+  --bg-muted:         #1e293b;
+  --bg-page:          #0f172a;
+
+  --text-primary:     #f1f5f9;
+  --text-secondary:   #e2e8f0;
+  --text-muted:       #94a3b8;
+  --text-faint:       #64748b;
+
+  --border-color:     #334155;
+  --border-input:     #475569;
+
+  --accent:           #8b5cf6;
+  --accent-light:     rgba(139, 92, 246, 0.15);
+  --accent-dark:      #7c3aed;
+
+  --shadow-sm:        0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md:        0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --success-bg:       rgba(5, 150, 105, 0.2);
+  --success-text:     #6ee7b7;
+  --danger-bg:        rgba(220, 38, 38, 0.2);
+  --danger-text:      #fca5a5;
+  --warning-bg:       rgba(217, 119, 6, 0.2);
+  --warning-text:     #fcd34d;
+  --text-inverse:     #ffffff;
+  --info-bg:          rgba(59, 130, 246, 0.2);
+  --info-text:        #93c5fd;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

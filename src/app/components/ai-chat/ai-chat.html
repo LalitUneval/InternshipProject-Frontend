@@ -1,0 +1,42 @@
+<!-- Backdrop -->
+<div class="chat-backdrop" *ngIf="isOpen" (click)="toggleChat()"></div>
+
+<!-- Floating Button -->
+<div class="chat-toggle" (click)="toggleChat()">
+  <i class="bi bi-chat-dots"></i>
+</div>
+
+<!-- Chat Box -->
+<div class="chat-box" *ngIf="isOpen">
+  <!-- ...unchanged... -->
+</div>
+
+<!-- Floating Button -->
+<div class="chat-toggle" (click)="toggleChat()">
+  <i class="bi bi-chat-dots"></i>
+</div>
+
+<!-- Chat Box -->
+<div class="chat-box" *ngIf="isOpen">
+
+  <div class="chat-header">
+    <span>AI Assistant</span>
+    <i class="bi bi-x" (click)="toggleChat()"></i>
+  </div>
+
+  <div class="chat-body" #chatContainer>
+    <div *ngFor="let msg of messages; trackBy: trackByMessageId"
+      [ngClass]="msg.sender === 'user' ? 'user-msg' : 'bot-msg'">
+      <div [innerHTML]="msg.text"></div>
+    </div>
+  </div>
+
+  <div class="chat-footer">
+    <input [(ngModel)]="userInput" placeholder="Type message..." (keyup.enter)="sendMessage()" />
+
+    <button (click)="sendMessage()" [disabled]="isLoading">
+      <i class="bi bi-send"></i>
+    </button>
+  </div>
+
+</div>

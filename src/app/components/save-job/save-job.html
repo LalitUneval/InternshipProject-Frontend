@@ -1,0 +1,69 @@
+<div class="saved-container" [class.blur]="selectedJobId()">
+
+  <h2>Saved Jobs</h2>
+
+  <!-- Empty State -->
+  <div *ngIf="loading()" class="loader-container">
+    <div class="loader"></div>
+    <p>Loading jobs...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!loading() && savedJobs().length === 0" class="no-jobs">
+    No jobs found 😔
+  </div>
+
+  <!-- Job List -->
+  <div class="job-list" *ngIf="!loading() && savedJobs().length > 0">
+
+    @for (job of savedJobs(); track job.id) {
+
+      <div class="job-card" (click)="openJob(job)">
+
+        <div class="job-header">
+          <div>
+            <!-- ✅ FIX -->
+            <h3>{{ job.jobTitle }}</h3>
+            <p class="company">{{ job.companyName }}</p>
+          </div>
+
+          <span *ngIf="job.visaSponsored" class="visa">
+            ✨ Visa
+          </span>
+        </div>
+
+        <div class="job-details">
+          <span>📍 {{ job.city }}</span>
+
+          <!-- ❌ salary not available -->
+          <span>💼 Saved Job</span>
+
+          <!-- ❌ jobType not available -->
+          <!-- <span>🆔 ID: {{ job.jobId }}</span> -->
+        </div>
+
+        <div class="actions">
+          <button class="apply-btn">Apply</button>
+
+          <button 
+            class="unsave-btn"
+            (click)="unsaveJob(job.jobId); $event.stopPropagation()">
+            ❌ Un-save
+          </button>
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>
+
+@if(selectedJobId()){
+  <div class="overlay" (click)="closeDrawer()"></div>
+  <app-job-details 
+    [jobId]="selectedJobId()" 
+    (close)="closeDrawer()">
+  </app-job-details>
+}

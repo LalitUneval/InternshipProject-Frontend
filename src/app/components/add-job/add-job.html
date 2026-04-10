@@ -1,0 +1,77 @@
+<div class="job-form-container">
+  <div class="form-card">
+    
+    <h2>{{ isEditMode ? 'Update Job' : 'Create Job' }}</h2>
+
+    <form [formGroup]="jobForm" (ngSubmit)="createJob()">
+
+      <!-- Job Title -->
+      <div class="form-group">
+        <label>Job Title</label>
+        <input type="text" formControlName="title" placeholder="Enter job title">
+        <small *ngIf="jobForm.get('title')?.touched && jobForm.get('title')?.invalid">
+          Job title is required
+        </small>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>Description</label>
+        <textarea formControlName="description" placeholder="Enter job description"></textarea>
+        <small *ngIf="jobForm.get('description')?.touched && jobForm.get('description')?.invalid">
+          Description is required
+        </small>
+      </div>
+
+      <!-- Country Dropdown -->
+      <div class="form-group">
+        <label>Location</label>
+        <select formControlName="city">
+          <option value="">Select Country</option>
+          <option value="India">India</option>
+          <option value="USA">USA</option>
+          <option value="UK">UK</option>
+          <option value="Canada">Canada</option>
+          <option value="Australia">Australia</option>
+        </select>
+        <small *ngIf="jobForm.get('city')?.touched && jobForm.get('city')?.invalid">
+          Location is required
+        </small>
+      </div>
+
+      <!-- Salary -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Min Salary</label>
+          <input type="number" formControlName="salaryMin">
+        </div>
+
+        <div class="form-group">
+          <label>Max Salary</label>
+          <input type="number" formControlName="salaryMax">
+        </div>
+      </div>
+
+      <!-- Job Type -->
+      <div class="form-group">
+        <label>Job Type</label>
+        <select formControlName="jobType">
+          <option value="FULL_TIME">Full-time</option>
+          <option value="PART_TIME">Part-time</option>
+        </select>
+      </div>
+
+      <!-- Visa -->
+      <div class="checkbox-group">
+        <input type="checkbox" formControlName="visaSponsored">
+        <label>Visa Sponsored</label>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" [disabled]="jobForm.invalid">
+        {{ isEditMode ? 'Update Job' : 'Create Job' }}
+      </button>
+
+    </form>
+  </div>
+</div>

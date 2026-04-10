@@ -1,0 +1,150 @@
+/* * =========================
+   JOB DETAILS
+========================= */
+
+.job-details {
+  display: flex;
+  gap: 14px;
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.blur {
+  filter: blur(4px);
+  transition: 0.3s;
+  pointer-events: none;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.view-btn {
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: var(--bg-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  background: var(--bg-surface-hover);
+  transform: scale(1.05);
+}
+
+/* Delete button */
+.view-btn:nth-child(1) {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.view-btn:nth-child(1):hover {
+  background: #fecaca;
+}
+
+/* Update button */
+.view-btn:nth-child(2) {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.view-btn:nth-child(2):hover {
+  background: var(--accent-light);
+}
+
+/* Save button */
+.view-btn:nth-child(3) {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.view-btn:nth-child(3):hover {
+  background: #bbf7d0;
+}
+
+/* =========================
+   RIGHT SIDE PANEL
+========================= */
+
+.job-details-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100%;
+  background: var(--bg-surface);
+  backdrop-filter: blur(10px);
+  box-shadow: -6px 0 25px rgba(0, 0, 0, 0.15);
+  padding: 25px;
+  overflow: auto;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Panel header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+/* Panel text */
+.job-details-panel h3 {
+  margin-top: 10px;
+  color: var(--text-primary);
+}
+
+.job-details-panel p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Apply button */
+.apply-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.apply-btn:hover {
+  transform: scale(1.03);
+}

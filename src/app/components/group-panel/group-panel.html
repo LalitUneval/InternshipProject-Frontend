@@ -1,0 +1,357 @@
+<!-- src/app/components/group-panel/group-panel.html -->
+<div class="group-panel">
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <div class="panel-header">
+    <div class="header-left">
+      <h2 class="panel-title">Community Groups</h2>
+      <span class="group-count">{{ displayedGroups.length }} groups</span>
+    </div>
+    <button class="btn-create" (click)="showCreateModal = true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      New Group
+    </button>
+  </div>
+
+  <!-- ── Search ─────────────────────────────────────────────── -->
+  <div class="search-bar">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input class="search-input" type="text"
+      placeholder="Search by name, city or country…"
+      [(ngModel)]="searchQuery" />
+    @if (searchQuery) {
+      <button class="clear-search" (click)="searchQuery = ''">✕</button>
+    }
+  </div>
+
+  <!-- ── Sub-tabs ───────────────────────────────────────────── -->
+  <div class="sub-tabs">
+    <button class="sub-tab" [class.active]="activeTab==='all'" (click)="setTab('all')">All Groups</button>
+    <button class="sub-tab" [class.active]="activeTab==='joined'" (click)="setTab('joined')">
+      Joined
+      @if (joinedGroups.length) { <span class="badge">{{ joinedGroups.length }}</span> }
+    </button>
+    <button class="sub-tab" [class.active]="activeTab==='pending'" (click)="setTab('pending')">
+      Pending
+      @if (pendingGroups.length) { <span class="badge warn">{{ pendingGroups.length }}</span> }
+    </button>
+    <button class="sub-tab" [class.active]="activeTab==='rejected'" (click)="setTab('rejected')">Rejected</button>
+  </div>
+
+  <!-- ── Cards ─────────────────────────────────────────────── -->
+  <div class="cards-scroll">
+
+    @if (loading) {
+      <div class="empty-state"><div class="spinner"></div></div>
+    }
+
+    @if (!loading && displayedGroups.length === 0) {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/>
+        </svg>
+        <p>No groups found</p>
+      </div>
+    }
+
+    @if (!loading && displayedGroups.length > 0) {
+      <div class="cards-grid">
+        @for (group of displayedGroups; track group.id) {
+          <div class="group-card">
+
+            <div class="card-head">
+              <div class="group-avatar">{{ groupInitials(group.name) }}</div>
+              <div class="card-meta">
+                <h3 class="card-name">{{ group.name }}</h3>
+                <div class="card-location">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  {{ group.city }}{{ group.city && group.originCountry ? ' · ' : '' }}{{ group.originCountry }}
+                </div>
+              </div>
+              <span class="privacy-badge" [class.public]="group.isPublic" [class.private]="!group.isPublic">
+                {{ group.isPublic ? 'Public' : 'Private' }}
+              </span>
+            </div>
+
+            <p class="card-desc">{{ group.description || 'No description provided.' }}</p>
+
+            <div class="card-footer">
+              <span class="admin-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                {{ group.adminName }}
+              </span>
+
+              <div class="card-actions">
+                @if (isAdminOf(group)) {
+                  <button class="btn-action manage" (click)="openAdminModal(group)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Manage
+                  </button>
+                }
+
+                @if (activeTab === 'all') {
+                  @if (!isJoined(group.id) && !isPending(group.id) && !isAdminOf(group)) {
+                    <button class="btn-action join" (click)="joinGroup(group.id)">Join</button>
+                  }
+                  @if (isPending(group.id)) {
+                    <button class="btn-action pending-btn" disabled>Pending…</button>
+                  }
+                  @if (isJoined(group.id) && !isAdminOf(group)) {
+                    <button class="btn-action leave" (click)="leaveGroup(group.id)">Leave</button>
+                  }
+                }
+
+                @if (activeTab === 'joined' && !isAdminOf(group)) {
+                  <button class="btn-action leave" (click)="leaveGroup(group.id)">Leave</button>
+                }
+
+                @if (activeTab === 'pending') {
+                  <span class="status-label warn">⏳ Awaiting approval</span>
+                }
+
+                @if (activeTab === 'rejected') {
+                  <span class="status-label danger">✗ Request rejected</span>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- ── Create Group Modal ──────────────────────────────────── -->
+@if (showCreateModal) {
+  <div class="modal-overlay" (click)="showCreateModal = false">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Create New Group</h3>
+        <button class="modal-close" (click)="showCreateModal = false">✕</button>
+      </div>
+      <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="modal-form">
+        <div class="field">
+          <label>Group Name *</label>
+          <input formControlName="name" placeholder="e.g. Indian Engineers in SF" />
+          @if (createForm.get('name')?.invalid && createForm.get('name')?.touched) {
+            <span class="field-err">Name must be at least 3 characters</span>
+          }
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>City *</label>
+            <input formControlName="city" placeholder="San Francisco" />
+          </div>
+          <div class="field">
+            <label>Origin Country *</label>
+            <input formControlName="originCountry" placeholder="India" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Description *</label>
+          <textarea formControlName="description" rows="3"
+            placeholder="What is this group about?"></textarea>
+        </div>
+        <div class="field">
+          <label>Visibility</label>
+          <div class="toggle-group">
+            <button type="button" class="toggle-opt"
+              [class.selected]="createForm.get('isPublic')?.value === true"
+              (click)="createForm.get('isPublic')?.setValue(true)">🌐 Public</button>
+            <button type="button" class="toggle-opt"
+              [class.selected]="createForm.get('isPublic')?.value === false"
+              (click)="createForm.get('isPublic')?.setValue(false)">🔒 Private</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="showCreateModal = false">Cancel</button>
+          <button type="submit" class="btn-submit" [disabled]="createForm.invalid">Create Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ── Admin Manage Modal ──────────────────────────────────── -->
+@if (showAdminModal && selectedAdminGroup) {
+  <div class="modal-overlay" (click)="closeAdminModal()">
+    <div class="modal-box admin-modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <h3>{{ selectedAdminGroup.name }}</h3>
+          <p class="modal-sub">Group Admin Panel</p>
+        </div>
+        <div class="modal-header-actions">
+          @if (!showDeleteConfirm) {
+            <button class="btn-delete-group" (click)="confirmDeleteGroup()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4h6v2"/>
+              </svg>
+              Delete Group
+            </button>
+          }
+          <button class="modal-close" (click)="closeAdminModal()">✕</button>
+        </div>
+      </div>
+
+      @if (showDeleteConfirm) {
+        <div class="delete-confirm-banner">
+          <p>⚠️ Are you sure? This will permanently delete
+            <strong>{{ selectedAdminGroup.name }}</strong> and all its data.</p>
+          <div class="delete-confirm-actions">
+            <button class="btn-cancel-sm" (click)="showDeleteConfirm = false">Cancel</button>
+            <button class="btn-confirm-delete" (click)="deleteGroup()">Yes, Delete</button>
+          </div>
+        </div>
+      }
+
+      <div class="admin-tabs">
+        <button class="admin-tab" [class.active]="adminTab === 'pending'"
+          (click)="setAdminTab('pending')">
+          Pending Requests
+          @if (pendingRequests.length > 0) {
+            <span class="badge warn">{{ pendingRequests.length }}</span>
+          }
+        </button>
+        <button class="admin-tab" [class.active]="adminTab === 'members'"
+          (click)="setAdminTab('members')">
+          All Members
+          @if (groupMembers.length > 0) {
+            <span class="badge">{{ groupMembers.length }}</span>
+          }
+        </button>
+      </div>
+
+      @if (adminLoading) {
+        <div class="admin-loading">
+          <div class="spinner"></div>
+          <span>Loading…</span>
+        </div>
+      }
+
+      <!-- PENDING REQUESTS TAB -->
+      @if (!adminLoading && adminTab === 'pending') {
+        @if (pendingRequests.length === 0) {
+          <div class="admin-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <p>No pending join requests</p>
+          </div>
+        }
+        @if (pendingRequests.length > 0) {
+          <div class="requests-list">
+            <div class="requests-count">
+              {{ pendingRequests.length }} pending request{{ pendingRequests.length > 1 ? 's' : '' }}
+            </div>
+            @for (member of pendingRequests; track member.id) {
+              <div class="request-item">
+                <!-- ✅ Show initials from real name -->
+                <div class="request-avatar">
+                  {{ groupInitials(getMemberName(member.userId)) }}
+                </div>
+                <div class="request-info">
+                  <!-- ✅ Show real name -->
+                  <div class="request-name">{{ getMemberName(member.userId) }}</div>
+                  <div class="request-time">
+                    Requested {{ member.requestedAt | date: 'MMM d, y' }}
+                  </div>
+                </div>
+                <div class="request-actions">
+                  <button class="btn-approve" (click)="approveRequest(member)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Approve
+                  </button>
+                  <button class="btn-reject" (click)="rejectRequest(member)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Reject
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+
+      <!-- ALL MEMBERS TAB -->
+      @if (!adminLoading && adminTab === 'members') {
+        @if (groupMembers.length === 0) {
+          <div class="admin-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <p>No members yet</p>
+          </div>
+        }
+        @if (groupMembers.length > 0) {
+          <div class="requests-list">
+            <div class="requests-count">
+              {{ groupMembers.length }} member{{ groupMembers.length > 1 ? 's' : '' }}
+            </div>
+            @for (member of groupMembers; track member.id) {
+              <div class="request-item">
+                <!-- ✅ Show initials from real name -->
+                <div class="request-avatar">
+                  {{ groupInitials(getMemberName(member.userId)) }}
+                </div>
+                <div class="request-info">
+                  <!-- ✅ Show real name -->
+                  <div class="request-name">{{ getMemberName(member.userId) }}</div>
+                  <div class="request-time">
+                    {{ getRoleLabel(member.role) }} · {{ getStatusLabel(member.status) }}
+                  </div>
+                </div>
+                @if (member.userId !== userId) {
+                  <button class="btn-reject" (click)="removeMember(member)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="8.5" cy="7" r="4"/>
+                      <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    Remove
+                  </button>
+                } @else {
+                  <span class="you-badge">You</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+
+    </div>
+  </div>
+}
+
+<!-- ── Toast ─────────────────────────────────────────────────── -->
+<div class="toast" [class.show]="toastMsg" [class.error]="toastType === 'error'">
+  {{ toastMsg }}
+</div>

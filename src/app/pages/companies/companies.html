@@ -1,0 +1,107 @@
+<div class="companies-page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Companies</h1>
+      <p class="subtitle">Discover companies hiring internationally</p>
+    </div>
+
+    <button class="add-btn"
+      routerLink="add-company"
+      *ngIf="role === 'RECRUITER' || role === 'ADMIN'">
+      + Add Company
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="top-bar" *ngIf="role === 'STUDENT'">
+    <input type="text"
+      placeholder="Search company or industry..."
+      class="search-input"
+      (input)="searchCompany($event)">
+  </div>
+
+  <p class="result-count">{{companies().length}} companies found</p>
+
+  <!-- Loader -->
+  <div *ngIf="loading()" class="loader-container">
+    <div class="loader"></div>
+    <p>Loading jobs...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && companies().length === 0" class="no-jobs">
+    No jobs found 😔
+  </div>
+
+  <!-- Cards -->
+  <div class="companies-container" *ngIf="!loading() && companies().length > 0">
+
+    @for(company of companies(); track company.id){
+
+    <div class="company-card">
+
+      <!-- TOP -->
+      <div class="card-top">
+
+        <div class="company-logo">🏢</div>
+
+        <div class="company-info">
+          <h3>{{company.companyName}}</h3>
+          <p class="industry">Technology</p>
+
+          <div class="meta">
+            <span>📍 {{company.location}}</span>
+            <span>👥 51–200 employees</span>
+          </div>
+
+          <a class="website" [href]="company.website" target="_blank">
+            {{company.website}}
+          </a>
+        </div>
+
+        <div class="job-badge">
+          5 Open Jobs
+        </div>
+
+      </div>
+
+      <!--Bottom Section -->
+      <div class="card-actions">
+
+        <button class="primary-btn"
+          [routerLink]="['/dashboard/jobs/company', company.id]">
+          View Jobs
+        </button>
+
+        <ng-container *ngIf="role === 'RECRUITER' || role === 'ADMIN'">
+
+          <button class="secondary-btn"
+            [routerLink]="['/dashboard/company/edit', company.id]">
+            Edit
+          </button>
+
+          <button class="secondary-btn"
+            [routerLink]="['/dashboard/jobs/add-jobs', company.id]">
+            Add Job
+          </button>
+
+          <button class="danger-btn"
+            (click)="deleteCompany(company.id)">
+            Delete
+          </button>
+
+        </ng-container>
+
+      </div>
+
+    </div>
+
+    }
+
+    
+
+  </div>
+
+</div>

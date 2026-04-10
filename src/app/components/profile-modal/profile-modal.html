@@ -1,0 +1,157 @@
+<!-- profile-modal.html -->
+
+<div class="modal-overlay">
+  <div class="modal-card">
+
+    <!-- Header — title changes based on create vs edit mode -->
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-icon">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <div>
+          @if (isEditMode) {
+            <h2 class="modal-title">Edit Profile</h2>
+            <p class="modal-subtitle">Update your personal details</p>
+          } @else {
+            <h2 class="modal-title">Complete Your Profile</h2>
+            <p class="modal-subtitle">This helps us personalise your experience</p>
+          }
+        </div>
+      </div>
+
+      <button class="close-btn" (click)="dismiss()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="gold-line"></div>
+
+    <!-- Error message -->
+    @if (errorMessage) {
+      <div class="alert-error">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <!-- Success message -->
+    @if (successMessage) {
+      <div class="alert-success">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    <!-- Form fields — pre-filled in edit mode via ngModel binding -->
+    <div class="form-grid">
+
+      <!-- Full Name -->
+      <div class="field-group">
+        <label class="field-label" for="fullName">Full Name</label>
+        <div class="input-wrap">
+          <i class="bi bi-person input-icon"></i>
+          <input
+            type="text"
+            id="fullName"
+            class="form-field"
+            placeholder="e.g. Raj Kumar"
+            [(ngModel)]="profile.fullName"
+          />
+        </div> 
+      </div>
+
+      <!-- Phone Number -->
+      <div class="field-group">
+        <label class="field-label" for="phoneNumber">Phone Number</label>
+        <div class="input-wrap">
+          <i class="bi bi-telephone input-icon"></i>
+          <input
+            type="tel"
+            id="phoneNumber"
+            class="form-field"
+            placeholder="e.g. 1234567891"
+            [(ngModel)]="profile.phoneNumber"
+          />
+        </div>
+      </div>
+
+      <!-- Origin Country -->
+      <div class="field-group">
+        <label class="field-label" for="originCountry">Origin Country</label>
+        <div class="input-wrap">
+          <i class="bi bi-globe input-icon"></i>
+          <input
+            type="text"
+            id="originCountry"
+            class="form-field"
+            placeholder="e.g. India"
+            [(ngModel)]="profile.originCountry"
+          />
+        </div>
+      </div>
+
+      <!-- Current City -->
+      <div class="field-group">
+        <label class="field-label" for="currentCity">Current City</label>
+        <div class="input-wrap">
+          <i class="bi bi-geo-alt input-icon"></i>
+          <input
+            type="text"
+            id="currentCity"
+            class="form-field"
+            placeholder="e.g. San Francisco"
+            [(ngModel)]="profile.currentCity"
+          />
+        </div>
+      </div>
+
+      <!-- Visa Type -->
+      <div class="field-group">
+        <label class="field-label" for="visaType">Visa Type</label>
+        <div class="input-wrap">
+          <i class="bi bi-card-text input-icon"></i>
+          <input
+            type="text"
+            id="visaType"
+            class="form-field"
+            placeholder="e.g. F1, H1B, OPT"
+            [(ngModel)]="profile.visaType"
+          />
+        </div>
+      </div>
+
+      <!-- Skills — full width -->
+      <div class="field-group field-full-width">
+        <label class="field-label" for="skills">Skills</label>
+        <div class="input-wrap">
+          <i class="bi bi-tools input-icon"></i>
+          <input
+            type="text"
+            id="skills"
+            class="form-field"
+            placeholder="e.g. Java, Spring Boot, React, PostgreSQL"
+            [(ngModel)]="profile.skills"
+          />
+        </div>
+        <p class="field-hint">Separate each skill with a comma</p>
+      </div>
+
+    </div>
+
+    <!-- Save / Update button -->
+    <button class="save-btn" (click)="saveProfile()" [disabled]="isLoading">
+      @if (isLoading) {
+        <span class="spinner"></span>
+        <span>Saving...</span>
+      } @else if (isEditMode) {
+        <i class="bi bi-pencil-square"></i>
+        <span>Update Profile</span>
+      } @else {
+        <i class="bi bi-check-circle"></i>
+        <span>Save Profile</span>
+      }
+    </button>
+
+  </div>
+</div>

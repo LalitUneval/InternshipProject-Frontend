@@ -1,0 +1,141 @@
+<div class="job-container" [class.blur]="selectedJobId()">
+  <div *ngIf="jobs().length === 0 && errorMessage()" class="no-jobs">
+    {{ errorMessage() }}
+  </div>
+
+  <h1>Job Service</h1>
+
+  <p class="subtitle">
+    Find jobs, save favorites, browse companies, and track applications
+  </p>
+
+  <!-- Tabs -->
+  <!-- <div class="tabs">
+
+
+    <button class="active">Jobs</button>
+
+ 
+    <button *ngIf="role === 'STUDENT'" routerLink="saved">Saved</button>
+    <button *ngIf="role === 'STUDENT'" routerLink="applyed">Applied</button>
+
+
+    <button routerLink="/dashboard/company">
+      Companies
+    </button>
+
+    <button *ngIf="role === 'RECRUITER' || role === 'ADMIN'" routerLink="job-applications">
+      Applications
+    </button>
+
+  </div> -->
+
+  <!-- Filters -->
+  <div class="filters" *ngIf="role === 'STUDENT'">
+    <input
+      type="text"
+      placeholder="Search by title or company..."
+      class="search"
+      [(ngModel)]="keyword"
+      (ngModelChange)="onKeywordChange($event)"
+    />
+
+    <select [(ngModel)]="jobType" (ngModelChange)="onFilterChange()">
+      <option value="">All</option>
+      <option value="FULL_TIME">Full-time</option>
+      <option value="PART_TIME">Part-time</option>
+    </select>
+
+    <select [(ngModel)]="city" (ngModelChange)="onFilterChange()">
+      <option value="">All</option>
+      <option value="UK">UK</option>
+      <option value="India">India</option>
+      <option value="USA">USA</option>
+      <option value="Canada">Canada</option>
+      <option value="Australia">Australia</option>
+    </select>
+  </div>
+
+  <p class="results">{{jobs().length || 0}} positions found</p>
+
+  <!-- Loader -->
+  <div *ngIf="loading()" class="loader-container">
+    <div class="loader"></div>
+    <p>Loading jobs...</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading() && jobs().length === 0" class="no-jobs">
+    No jobs found 😔
+  </div>
+
+  <!-- Jobs -->
+  <div class="job-list" *ngIf="!loading() && jobs().length > 0">
+    @for (job of jobs(); track job.id){
+
+    <div class="job-card" (click)="openJob(job)">
+      <div class="job-header">
+        <div>
+          <h3>{{job.title}}</h3>
+          <p class="company">{{job.companyName}}</p>
+        </div>
+
+        <span *ngIf="job.visaSponsored" class="visa"> ✨ Visa </span>
+      </div>
+
+      <div class="job-details">
+        <span>📍 {{job.city}}</span>
+
+        <span> 💰 ${{job.salaryMax | number}} </span>
+
+        <span> ⏱ {{job.jobType}} </span>
+      </div>
+      <button
+        class="view-btn"
+        *ngIf="role === 'RECRUITER' || role === 'ADMIN'"
+        (click)="deleteJob(job.id)"
+      >
+        delete
+      </button>
+      <button
+        class="view-btn"
+        *ngIf="role === 'RECRUITER' || role === 'ADMIN'"
+        [routerLink]="['/dashboard/jobs/edit', job.id]"
+      >
+        Update
+      </button>
+      <button
+        class="view-btn"
+        *ngIf="role === 'STUDENT'"
+        (click)="saveJob(job.id)"
+      >
+        save
+      </button>
+    </div>
+
+    }
+  </div>
+
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button (click)="prevPage()" [disabled]="currentPage() === 0">
+      ← Prev
+    </button>
+
+    <span> Page {{ currentPage() + 1 }} of {{ totalPages() }} </span>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage() === totalPages() - 1"
+    >
+      Next →
+    </button>
+  </div>
+</div>
+
+@if(selectedJobId()){
+<div class="overlay" (click)="closeDrawer()"></div>
+<app-job-details [jobId]="selectedJobId()" (close)="closeDrawer()">
+</app-job-details>
+}
+
+<router-outlet></router-outlet>

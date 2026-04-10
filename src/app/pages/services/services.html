@@ -1,0 +1,761 @@
+
+<div class="services-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h2 class="page-title">
+      <i class="bi bi-tools"></i> Services
+    </h2>
+    <p class="page-subtitle">Find trusted service providers to help you settle in</p>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'browse'" (click)="switchTab('browse')">
+      <i class="bi bi-search"></i> Browse Services
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'myBookings'" (click)="switchTab('myBookings')">
+      <i class="bi bi-calendar-check"></i> My Bookings
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'applyProvider'" (click)="switchTab('applyProvider')">
+      <i class="bi bi-person-plus"></i> Become a Provider
+    </button>
+
+    <!-- Only visible if this user is an approved provider -->
+    @if (isProvider) {
+      <button class="tab-btn provider-tab" [class.active]="activeTab === 'providerDashboard'"
+        (click)="switchTab('providerDashboard')">
+        <i class="bi bi-briefcase"></i> My Provider Dashboard
+      </button>
+    }
+
+    @if (isAdmin) {
+      <span class="tab-divider"></span>
+      <button class="tab-btn" [class.active]="activeTab === 'adminProviders'" (click)="switchTab('adminProviders')">
+        <i class="bi bi-person-gear"></i> Manage Providers
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'adminBookings'" (click)="switchTab('adminBookings')">
+        <i class="bi bi-clipboard-data"></i> Manage Bookings
+      </button>
+    }
+  </div>
+
+  <!-- TAB 1 — BROWSE-->
+  @if (activeTab === 'browse') {
+    <div class="tab-content">
+
+      <!-- Search filters -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>City</label>
+          <input type="text" class="filter-input" placeholder="e.g. San Francisco"
+            [(ngModel)]="searchCity" />
+        </div>
+        <div class="filter-group">
+          <label>Service Type</label>
+          <select class="filter-input" [(ngModel)]="searchType">
+            <option value="">All Types</option>
+            @for (t of serviceTypes; track t) {
+              <option [value]="t">{{ labelOf(t) }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Verified</label>
+          <select class="filter-input" [(ngModel)]="searchVerified">
+            <option value="">Any</option>
+            <option value="true">Verified Only</option>
+            <option value="false">Not Verified</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary" (click)="searchProviders()">
+            <i class="bi bi-search"></i> Search
+          </button>
+          <button class="btn-outline btn-sm" (click)="clearSearch()">
+            <i class="bi bi-x-lg"></i> Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      @if (loadingProviders) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      }
+
+      <!-- Provider grid -->
+      @if (!loadingProviders) {
+        <div class="provider-grid">
+          @for (p of providers; track p.id) {
+            <div class="provider-card" (click)="openDetail(p)">
+              <div class="provider-card-top">
+                <div class="provider-icon">{{ iconOf(p.serviceType) }}</div>
+                <div class="provider-info">
+                  <h3 class="provider-name">{{ p.name }}</h3>
+                  <div class="provider-type">{{ labelOf(p.serviceType) }}</div>
+                </div>
+                @if (p.isVerified) {
+                  <span class="verified-badge">
+                    <i class="bi bi-patch-check-fill"></i> Verified
+                  </span>
+                }
+              </div>
+
+              <div class="provider-city">
+                <i class="bi bi-geo-alt"></i> {{ p.city }}
+              </div>
+
+              @if (p.description) {
+                <p class="provider-desc">{{ p.description }}</p>
+              }
+
+              <div class="provider-footer">
+                <div class="provider-rating">
+                  @for (s of starsArray(p.rating); track s) {
+                    <i class="bi" [class.bi-star-fill]="s <= p.rating"
+                       [class.bi-star]="s > p.rating"></i>
+                  }
+                  <span class="rating-num">{{ p.rating | number:'1.1-1' }}</span>
+                  <span class="review-count">({{ p.totalReviews }})</span>
+                </div>
+                <!-- Fix Show "Your Service" badge if user owns this provider -->
+                @if (p.ownerUserId === userId) {
+                  <span class="own-service-badge">
+                    <i class="bi bi-person-check-fill"></i> Your Service
+                  </span>
+                } @else {
+                  <button class="btn-book" (click)="openDetail(p); $event.stopPropagation()">
+                    Book Now
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (providers.length === 0) {
+            <div class="empty-state">
+              <i class="bi bi-tools empty-icon"></i>
+              <p>No service providers found.</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Provider detail overlay -->
+      @if (selectedProvider) {
+        <div class="overlay" (click)="closeDetail()">
+          <div class="detail-modal" (click)="$event.stopPropagation()">
+            <button class="close-btn" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+
+            <div class="detail-header">
+              <div class="detail-icon">{{ iconOf(selectedProvider.serviceType) }}</div>
+              <div>
+                <h2>{{ selectedProvider.name }}</h2>
+                <div class="detail-type">{{ labelOf(selectedProvider.serviceType) }}</div>
+              </div>
+              @if (selectedProvider.isVerified) {
+                <span class="verified-badge ml-auto">
+                  <i class="bi bi-patch-check-fill"></i> Verified
+                </span>
+              }
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-item"><strong>City</strong><span>{{ selectedProvider.city }}</span></div>
+              <div class="detail-item">
+                <strong>Rating</strong>
+                <span>{{ selectedProvider.rating | number:'1.1-1' }} ★ ({{ selectedProvider.totalReviews }} reviews)</span>
+              </div>
+              @if (selectedProvider.contactNumber) {
+                <div class="detail-item"><strong>Phone</strong><span>{{ selectedProvider.contactNumber }}</span></div>
+              }
+              @if (selectedProvider.email) {
+                <div class="detail-item"><strong>Email</strong><span>{{ selectedProvider.email }}</span></div>
+              }
+            </div>
+
+            @if (selectedProvider.description) {
+              <div class="detail-section">
+                <strong>About</strong>
+                <p>{{ selectedProvider.description }}</p>
+              </div>
+            }
+
+            @if (bookSuccess) {
+              <div class="alert-success">{{ bookSuccess }}</div>
+            }
+            @if (bookError) {
+              <div class="alert-error">{{ bookError }}</div>
+            }
+
+            <!-- FIX: Block book button if this is the user's own service -->
+            @if (selectedProvider.ownerUserId === userId) {
+              <div class="own-service-notice">
+                <i class="bi bi-info-circle"></i>
+                This is your own service — you cannot book it.
+              </div>
+            } @else if (!showBookForm && !bookSuccess) {
+              <button class="btn-primary full-width" (click)="openBookForm()">
+                <i class="bi bi-calendar-plus"></i> Book This Service
+              </button>
+            }
+
+            @if (showBookForm && selectedProvider.ownerUserId !== userId) {
+              <div class="book-form">
+                <h4>Book Appointment</h4>
+                <div class="form-group">
+                  <label>Date & Time *</label>
+                  <input type="datetime-local" class="form-input" [(ngModel)]="bookDate" />
+                </div>
+                <div class="form-group">
+                  <label>Notes (optional)</label>
+                  <textarea class="form-input" rows="3" [(ngModel)]="bookNotes"
+                    placeholder="Any special requirements…"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-primary" (click)="submitBooking()" [disabled]="bookLoading || !bookDate">
+                    {{ bookLoading ? 'Booking…' : 'Confirm Booking' }}
+                  </button>
+                  <button class="btn-outline" (click)="showBookForm = false">Cancel</button>
+                </div>
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+  <!--TAB 2 — MY BOOKINGS -->
+  @if (activeTab === 'myBookings') {
+    <div class="tab-content">
+
+      @if (myBookingsLoading) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      }
+
+      @if (myBookingsError) {
+        <div class="alert-error"><i class="bi bi-exclamation-triangle"></i> {{ myBookingsError }}</div>
+      }
+
+      @if (!myBookingsLoading && myBookings.length === 0 && !myBookingsError) {
+        <div class="empty-state">
+          <i class="bi bi-calendar-x empty-icon"></i>
+          <p>You have no bookings yet.</p>
+          <button class="btn-primary btn-sm" (click)="switchTab('browse')">
+            <i class="bi bi-search"></i> Browse Services
+          </button>
+        </div>
+      }
+
+      <div class="booking-list">
+        @for (b of myBookings; track b.id) {
+          <div class="booking-card">
+            <div class="booking-top">
+              <div class="booking-icon">{{ iconOf(b.serviceType) }}</div>
+              <div class="booking-info">
+                <h4>{{ b.serviceProviderName }}</h4>
+                <div class="booking-type">{{ labelOf(b.serviceType) }}</div>
+              </div>
+              <span class="status-badge" [ngClass]="getStatusClass(b.status)">
+                {{ b.status }}
+              </span>
+            </div>
+
+            <div class="booking-meta">
+              <span><i class="bi bi-calendar"></i> {{ formatDate(b.bookingDate) }}</span>
+              @if (b.notes) { <span><i class="bi bi-chat-text"></i> {{ b.notes }}</span> }
+            </div>
+
+            <div class="booking-actions">
+              @if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
+                <button class="btn-danger btn-sm" (click)="cancelBooking(b.id)">
+                  <i class="bi bi-x-circle"></i> Cancel
+                </button>
+              }
+              @if (b.status === 'CONFIRMED') {
+                <button class="btn-outline btn-sm" (click)="openRatingModal(b.id)">
+                  <i class="bi bi-star"></i> Complete & Rate
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+
+  <!-- Tab 3 — Become Provider -->
+  @if (activeTab === 'applyProvider') {
+    <div class="tab-content">
+
+      <div class="apply-layout">
+
+        <!-- Application Form -->
+        <div class="apply-card">
+          <div class="apply-header">
+            <div class="apply-icon">🏢</div>
+            <div>
+              <h3 class="apply-title">Apply as a Service Provider</h3>
+              <p class="apply-subtitle">
+                Fill in your details below. Our admin team will review your application
+                and approve it within 1–2 business days.
+              </p>
+            </div>
+          </div>
+
+          @if (applySuccess) {
+            <div class="alert-success">
+              <i class="bi bi-check-circle-fill"></i> {{ applySuccess }}
+            </div>
+          }
+          @if (applyError) {
+            <div class="alert-error">
+              <i class="bi bi-exclamation-triangle"></i> {{ applyError }}
+            </div>
+          }
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Business / Provider Name *</label>
+              <input type="text" class="form-input" [(ngModel)]="applyForm.name"
+                placeholder="e.g. Sunrise Visa Consultants" />
+            </div>
+
+            <div class="form-group">
+              <label>Service Type *</label>
+              <select class="form-input" [(ngModel)]="applyForm.serviceType">
+                @for (t of serviceTypes; track t) {
+                  <option [value]="t">{{ iconOf(t) }} {{ labelOf(t) }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>City *</label>
+              <input type="text" class="form-input" [(ngModel)]="applyForm.city"
+                placeholder="e.g. San Francisco" />
+            </div>
+
+            <div class="form-group">
+              <label>Contact Number</label>
+              <input type="text" class="form-input" [(ngModel)]="applyForm.contactNumber"
+                placeholder="+1 234 567 8900" />
+            </div>
+
+            <div class="form-group full-span">
+              <label>Email</label>
+              <input type="email" class="form-input" [(ngModel)]="applyForm.email"
+                placeholder="contact@yourcompany.com" />
+            </div>
+
+            <div class="form-group full-span">
+              <label>Description</label>
+              <textarea class="form-input" rows="4" [(ngModel)]="applyForm.description"
+                placeholder="Describe your services, experience, and what makes you stand out…"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 16px;">
+            <button class="btn-primary"
+              (click)="submitApplication()"
+              [disabled]="applyLoading || !applyForm.name || !applyForm.city">
+              @if (applyLoading) {
+                <span class="spinner-inline"></span> Submitting…
+              } @else {
+                <i class="bi bi-send"></i> Submit Application
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- My Applications History -->
+        <div class="my-applications">
+          <h4 class="section-label">
+            <i class="bi bi-clock-history"></i> My Applications
+          </h4>
+
+          @if (myApplicationsLoading) {
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          }
+
+          @if (!myApplicationsLoading && myApplications.length === 0) {
+            <div class="empty-state small-empty">
+              <i class="bi bi-inbox empty-icon" style="font-size:28px;"></i>
+              <p>No applications submitted yet.</p>
+            </div>
+          }
+
+          @for (app of myApplications; track app.id) {
+            <div class="application-card">
+              <div class="application-top">
+                <div class="application-icon">{{ iconOf(app.serviceType) }}</div>
+                <div class="application-info">
+                  <span class="application-name">{{ app.name }}</span>
+                  <span class="application-type">{{ labelOf(app.serviceType) }} · {{ app.city }}</span>
+                </div>
+                <span class="status-badge" [ngClass]="getStatusClass(app.status)">
+                  {{ app.status }}
+                </span>
+              </div>
+
+              <div class="application-meta">
+                <span><i class="bi bi-calendar"></i> Applied: {{ formatDate(app.appliedAt) }}</span>
+                @if (app.reviewedAt) {
+                  <span><i class="bi bi-check2-circle"></i> Reviewed: {{ formatDate(app.reviewedAt) }}</span>
+                }
+              </div>
+
+              @if (app.adminNote) {
+                <div class="admin-note">
+                  <i class="bi bi-chat-quote"></i>
+                  <span>Admin note: {{ app.adminNote }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Tab 4 — Provider Dashboard  -->
+  @if (activeTab === 'providerDashboard' && isProvider) {
+    <div class="tab-content">
+
+      <div class="admin-toolbar">
+        <h3 class="admin-section-title">
+          <i class="bi bi-briefcase"></i> Incoming Booking Requests
+        </h3>
+        <button class="btn-outline btn-sm"
+          (click)="providerBookingsLoaded = false; loadProviderBookings()">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+
+      <p class="provider-dashboard-hint">
+        <i class="bi bi-info-circle"></i>
+        These are booking requests from users who want your service.
+        Confirm to accept, or users can cancel their own requests.
+      </p>
+
+      @if (providerBookingsLoading) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      }
+
+      @if (!providerBookingsLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Requested On</th>
+                <th>Booking Date</th>
+                <th>Notes</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of providerBookings; track b.id) {
+                <tr>
+                  <td>User #{{ b.userId }}</td>
+                  <td>{{ formatDate(b.createdAt) }}</td>
+                  <td>{{ formatDate(b.bookingDate) }}</td>
+                  <td>{{ b.notes || '—' }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusClass(b.status)">
+                      {{ b.status }}
+                    </span>
+                  </td>
+                  <td class="td-actions">
+                    @if (b.status === 'PENDING') {
+                      <!-- Raj confirms Milan's booking -->
+                      <button class="btn-approve btn-sm" (click)="providerConfirmBooking(b.id)">
+                        <i class="bi bi-check-lg"></i> Confirm
+                      </button>
+                    }
+                    @if (b.status === 'CONFIRMED') {
+                      <span class="reviewed-label">
+                        <i class="bi bi-check2-all"></i> Confirmed
+                      </span>
+                    }
+                    @if (b.status === 'COMPLETED') {
+                      <span class="reviewed-label" style="color: var(--success-text)">
+                        <i class="bi bi-trophy"></i> Completed
+                      </span>
+                    }
+                    @if (b.status === 'CANCELLED') {
+                      <span class="reviewed-label" style="color: var(--danger-text)">
+                        <i class="bi bi-x-circle"></i> Cancelled
+                      </span>
+                    }
+                  </td>
+                </tr>
+              }
+              @if (providerBookings.length === 0) {
+                <tr>
+                  <td colspan="6" class="td-empty">
+                    <i class="bi bi-inbox" style="font-size:24px; display:block; margin-bottom:8px;"></i>
+                    No booking requests yet.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+    </div>
+  }
+
+  <!-- TAB 5 — ADMIN: MANAGE PROVIDERS -->
+  @if (activeTab === 'adminProviders' && isAdmin) {
+    <div class="tab-content">
+
+      <div class="admin-toolbar">
+        <h3 class="admin-section-title">Service Providers</h3>
+        <button class="btn-primary" (click)="openAddModal()">
+          <i class="bi bi-plus-circle"></i> Add Provider
+        </button>
+      </div>
+
+      @if (formSuccess) {
+        <div class="alert-success">{{ formSuccess }}</div>
+      }
+
+      @if (adminProvidersLoading) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      }
+
+      @if (!adminProvidersLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>City</th>
+                <th>Rating</th>
+                <th>Verified</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of adminProviders; track p.id) {
+                <tr>
+                  <td class="td-name">{{ p.name }}</td>
+                  <td>{{ labelOf(p.serviceType) }}</td>
+                  <td>{{ p.city }}</td>
+                  <td>{{ p.rating | number:'1.1-1' }} ★</td>
+                  <td>
+                    @if (p.isVerified) {
+                      <span class="verified-badge sm"><i class="bi bi-patch-check-fill"></i> Yes</span>
+                    } @else {
+                      <span class="unverified-badge">No</span>
+                    }
+                  </td>
+                  <td class="td-actions">
+                    <button class="btn-outline btn-sm" (click)="openEditModal(p)">
+                      <i class="bi bi-pencil"></i> Edit
+                    </button>
+                    <button class="btn-danger btn-sm" (click)="deleteProvider(p)">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+              }
+              @if (adminProviders.length === 0) {
+                <tr><td colspan="6" class="td-empty">No providers yet.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+    </div>
+  }
+
+  <!--Tab 6 Admin Manage Booking-->
+  @if (activeTab === 'adminBookings' && isAdmin) {
+    <div class="tab-content">
+
+      <div class="admin-toolbar">
+        <h3 class="admin-section-title">Upcoming Bookings</h3>
+        <button class="btn-outline btn-sm" (click)="adminBookingsLoaded = false; loadAdminBookings()">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+
+      @if (adminBookingsLoading) {
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      }
+
+      @if (!adminBookingsLoading) {
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of adminBookings; track b.id) {
+                <tr>
+                  <td>{{ b.serviceProviderName }}</td>
+                  <td>{{ labelOf(b.serviceType) }}</td>
+                  <td>{{ formatDate(b.bookingDate) }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusClass(b.status)">
+                      {{ b.status }}
+                    </span>
+                  </td>
+                  <td>{{ b.notes || '—' }}</td>
+                  <td class="td-actions">
+                    @if (b.status === 'PENDING') {
+                      <!-- FIX: was confirmBooking(b.id) — now adminConfirmBooking(b.id) -->
+                      <button class="btn-outline btn-sm" (click)="adminConfirmBooking(b.id)">
+                        <i class="bi bi-check-circle"></i> Confirm
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+              @if (adminBookings.length === 0) {
+                <tr><td colspan="6" class="td-empty">No upcoming bookings.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>
+
+<!-- Add Provider Modal -->
+@if (showAddModal) {
+  <div class="overlay" (click)="showAddModal = false">
+    <div class="detail-modal" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="showAddModal = false"><i class="bi bi-x-lg"></i></button>
+      <h3 class="form-title"><i class="bi bi-plus-circle"></i> Add Service Provider</h3>
+
+      @if (formError) { <div class="alert-error">{{ formError }}</div> }
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" class="form-input" [(ngModel)]="providerForm.name" placeholder="Provider name" />
+        </div>
+        <div class="form-group">
+          <label>Service Type *</label>
+          <select class="form-input" [(ngModel)]="providerForm.serviceType">
+            @for (t of serviceTypes; track t) {
+              <option [value]="t">{{ labelOf(t) }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" class="form-input" [(ngModel)]="providerForm.city" placeholder="City" />
+        </div>
+        <div class="form-group">
+          <label>Contact Number</label>
+          <input type="text" class="form-input" [(ngModel)]="providerForm.contactNumber" />
+        </div>
+        <div class="form-group full-span">
+          <label>Email</label>
+          <input type="email" class="form-input" [(ngModel)]="providerForm.email" />
+        </div>
+        <div class="form-group full-span">
+          <label>Description</label>
+          <textarea class="form-input" rows="3" [(ngModel)]="providerForm.description"
+            placeholder="Describe the service…"></textarea>
+        </div>
+        <div class="form-group check-row">
+          <label class="check-label">
+            <input type="checkbox" [(ngModel)]="providerForm.isVerified" />
+            Mark as Verified
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions" style="margin-top:16px;">
+        <button class="btn-primary" (click)="submitAddProvider()" [disabled]="formLoading">
+          {{ formLoading ? 'Adding…' : 'Add Provider' }}
+        </button>
+        <button class="btn-outline" (click)="showAddModal = false">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Edit Provider Modal -->
+@if (showEditModal && editingProvider) {
+  <div class="overlay" (click)="showEditModal = false">
+    <div class="detail-modal small-modal" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="showEditModal = false"><i class="bi bi-x-lg"></i></button>
+      <h3 class="form-title"><i class="bi bi-pencil"></i> Edit: {{ editingProvider.name }}</h3>
+
+      @if (formError) { <div class="alert-error">{{ formError }}</div> }
+
+      <div class="form-group">
+        <label>Contact Number</label>
+        <input type="text" class="form-input" [(ngModel)]="editForm.contactNumber" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-input" [(ngModel)]="editForm.email" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="editForm.description"></textarea>
+      </div>
+      <div class="form-group check-row">
+        <label class="check-label">
+          <input type="checkbox" [(ngModel)]="editForm.isVerified" />
+          Verified
+        </label>
+      </div>
+      <div class="form-actions" style="margin-top:16px;">
+        <button class="btn-primary" (click)="submitEditProvider()" [disabled]="formLoading">
+          {{ formLoading ? 'Saving…' : 'Save Changes' }}
+        </button>
+        <button class="btn-outline" (click)="showEditModal = false">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Rating Modal-->
+@if (showRatingModal) {
+  <div class="overlay" (click)="showRatingModal = false">
+    <div class="detail-modal small-modal" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="showRatingModal = false"><i class="bi bi-x-lg"></i></button>
+      <h3 class="form-title"><i class="bi bi-star"></i> Rate Your Experience</h3>
+      <div class="rating-selector">
+        @for (s of starsArray(5); track s) {
+          <i class="bi star-btn"
+            [class.bi-star-fill]="s <= rating"
+            [class.bi-star]="s > rating"
+            (click)="rating = s"></i>
+        }
+        <span class="rating-value">{{ rating }} / 5</span>
+      </div>
+      <div class="form-actions" style="margin-top:20px;">
+        <button class="btn-primary" (click)="submitRating()">Submit & Complete</button>
+        <button class="btn-outline" (click)="showRatingModal = false">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
