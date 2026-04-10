@@ -1,11 +1,9 @@
 // ================================================================
 //  CENTRALIZED API CONFIGURATION
-//  Change `useProduction` to switch ALL endpoints at once.
-//  Change `LOCAL_IP` or `PROD_IP` to update every URL in the app.
 // ================================================================
 
 // ========== SWITCH THIS FLAG TO TOGGLE LOCAL ↔ PRODUCTION ==========
-const useProduction = false;
+const useProduction = true; 
 
 // ========== LOCAL CONFIG ==========
 const LOCAL_IP = '10.36.171.105';
@@ -13,29 +11,37 @@ const LOCAL_GATEWAY_PORT = '8080';
 const LOCAL_COMMUNITY_PORT = '8090';
 
 // ========== PRODUCTION CONFIG ==========
-const PROD_IP = 'your-production-ip';
-const PROD_GATEWAY_PORT = '8080';
-const PROD_COMMUNITY_PORT = '8090';
+// Note: No ports needed here as Render handles them via HTTPS (443)
+const PROD_GATEWAY_DOMAIN = 'projectbackend-apigateway.onrender.com';
+const PROD_COMMUNITY_DOMAIN = 'your-community-service.onrender.com'; // Update this when deployed
 
-// ========== COMPUTED (don't touch below) ==========
-const IP = useProduction ? PROD_IP : LOCAL_IP;
-const GATEWAY_PORT = useProduction ? PROD_GATEWAY_PORT : LOCAL_GATEWAY_PORT;
-const COMMUNITY_PORT = useProduction ? PROD_COMMUNITY_PORT : LOCAL_COMMUNITY_PORT;
+// ========== COMPUTED LOGIC ==========
+const protocol = useProduction ? 'https' : 'http';
+
+const gatewayBase = useProduction 
+  ? `${protocol}://${PROD_GATEWAY_DOMAIN}` 
+  : `${protocol}://${LOCAL_IP}:${LOCAL_GATEWAY_PORT}`;
+
+const communityBase = useProduction 
+  ? `${protocol}://${PROD_COMMUNITY_DOMAIN}` 
+  : `${protocol}://${LOCAL_IP}:${LOCAL_COMMUNITY_PORT}`;
 
 export const environment = {
   production: useProduction,
 
   // Base URLs
-  gatewayUrl: `http://${IP}:${GATEWAY_PORT}`,
-  communityUrl: `http://${IP}:${COMMUNITY_PORT}`,
+  gatewayUrl: gatewayBase,
+  communityUrl: communityBase,
 
-  // Pre-built API paths
-  authApi: `http://${IP}:${GATEWAY_PORT}/api/auth`,
-  usersApi: `http://${IP}:${GATEWAY_PORT}/api/users`,
-  jobsApi: `http://${IP}:${GATEWAY_PORT}/api/jobs`,
-  relocationApi: `http://${IP}:${GATEWAY_PORT}/api/relocation`,
-  aiApi: `http://${IP}:${GATEWAY_PORT}/api/ai`,
-  communityGroupsApi: `http://${IP}:${COMMUNITY_PORT}/api/community/groups`,
-  communityChatApi: `http://${IP}:${COMMUNITY_PORT}/api/community/chat`,
-  communityWsUrl: `http://${IP}:${COMMUNITY_PORT}/ws`,
+  // Pre-built API paths (Pointing through the Gateway)
+  authApi: `${gatewayBase}/api/auth`,
+  usersApi: `${gatewayBase}/api/users`,
+  jobsApi: `${gatewayBase}/api/jobs`,
+  relocationApi: `${gatewayBase}/api/relocation`,
+  aiApi: `${gatewayBase}/api/ai`,
+  
+  // Community paths
+  communityGroupsApi: `${communityBase}/api/community/groups`,
+  communityChatApi: `${communityBase}/api/community/chat`,
+  communityWsUrl: `${useProduction ? 'wss' : 'ws'}://${useProduction ? PROD_COMMUNITY_DOMAIN : LOCAL_IP + ':' + LOCAL_COMMUNITY_PORT}/ws`,
 };
