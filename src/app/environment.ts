@@ -13,7 +13,7 @@ const LOCAL_COMMUNITY_PORT = '8090';
 // ========== PRODUCTION CONFIG ==========
 // Note: No ports needed here as Render handles them via HTTPS (443)
 const PROD_GATEWAY_DOMAIN = 'projectbackend-apigateway.onrender.com';
-const PROD_COMMUNITY_DOMAIN = 'your-community-service.onrender.com'; // Update this when deployed
+const PROD_COMMUNITY_DOMAIN = 'projectbackend-communityservice.onrender.com'; // Update this when deployed
 
 // ========== COMPUTED LOGIC ==========
 const protocol = useProduction ? 'https' : 'http';
