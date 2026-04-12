@@ -43,5 +43,6 @@ export const environment = {
   // Community paths
   communityGroupsApi: `${communityBase}/api/community/groups`,
   communityChatApi: `${communityBase}/api/community/chat`,
-  communityWsUrl: `${useProduction ? 'wss' : 'ws'}://${useProduction ? PROD_COMMUNITY_DOMAIN : LOCAL_IP + ':' + LOCAL_COMMUNITY_PORT}/ws`,
+
+communityWsUrl: `${protocol}://${useProduction ? PROD_COMMUNITY_DOMAIN : LOCAL_IP + ':' + LOCAL_COMMUNITY_PORT}/ws`,
 };
