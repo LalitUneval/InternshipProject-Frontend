@@ -3,7 +3,7 @@
 // ================================================================
 
 // ========== SWITCH THIS FLAG TO TOGGLE LOCAL ↔ PRODUCTION ==========
-const useProduction = false; 
+const useProduction = true; 
 
 // ========== LOCAL CONFIG ==========
 const LOCAL_IP = '10.144.83.105';
