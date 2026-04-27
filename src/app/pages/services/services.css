@@ -355,7 +355,8 @@
 .admin-table tr:hover td { background: var(--bg-surface-hover); }
 
 .td-name { font-weight: 600; color: var(--text-primary); }
-.td-actions { display: flex; gap: 8px; align-items: center; }
+.td-actions { vertical-align: middle; }
+.td-actions .action-wrap { display: flex; gap: 8px; align-items: center; }
 .td-empty { text-align: center; color: var(--text-faint); padding: 32px; }
 
 /* ── Detail modal ─────────────────────────────── */

@@ -473,27 +473,29 @@
                     </span>
                   </td>
                   <td class="td-actions">
-                    @if (b.status === 'PENDING') {
-                      <!-- Raj confirms Milan's booking -->
-                      <button class="btn-approve btn-sm" (click)="providerConfirmBooking(b.id)">
-                        <i class="bi bi-check-lg"></i> Confirm
-                      </button>
-                    }
-                    @if (b.status === 'CONFIRMED') {
-                      <span class="reviewed-label">
-                        <i class="bi bi-check2-all"></i> Confirmed
-                      </span>
-                    }
-                    @if (b.status === 'COMPLETED') {
-                      <span class="reviewed-label" style="color: var(--success-text)">
-                        <i class="bi bi-trophy"></i> Completed
-                      </span>
-                    }
-                    @if (b.status === 'CANCELLED') {
-                      <span class="reviewed-label" style="color: var(--danger-text)">
-                        <i class="bi bi-x-circle"></i> Cancelled
-                      </span>
-                    }
+                    <div class="action-wrap">
+                      @if (b.status === 'PENDING') {
+                        <!-- Raj confirms Milan's booking -->
+                        <button class="btn-approve btn-sm" (click)="providerConfirmBooking(b.id)">
+                          <i class="bi bi-check-lg"></i> Confirm
+                        </button>
+                      }
+                      @if (b.status === 'CONFIRMED') {
+                        <span class="reviewed-label">
+                          <i class="bi bi-check2-all"></i> Confirmed
+                        </span>
+                      }
+                      @if (b.status === 'COMPLETED') {
+                        <span class="reviewed-label" style="color: var(--success-text)">
+                          <i class="bi bi-trophy"></i> Completed
+                        </span>
+                      }
+                      @if (b.status === 'CANCELLED') {
+                        <span class="reviewed-label" style="color: var(--danger-text)">
+                          <i class="bi bi-x-circle"></i> Cancelled
+                        </span>
+                      }
+                    </div>
                   </td>
                 </tr>
               }
@@ -560,12 +562,14 @@
                     }
                   </td>
                   <td class="td-actions">
-                    <button class="btn-outline btn-sm" (click)="openEditModal(p)">
-                      <i class="bi bi-pencil"></i> Edit
-                    </button>
-                    <button class="btn-danger btn-sm" (click)="deleteProvider(p)">
-                      <i class="bi bi-trash"></i> Delete
-                    </button>
+                    <div class="action-wrap">
+                      <button class="btn-outline btn-sm" (click)="openEditModal(p)">
+                        <i class="bi bi-pencil"></i> Edit
+                      </button>
+                      <button class="btn-danger btn-sm" (click)="deleteProvider(p)">
+                        <i class="bi bi-trash"></i> Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               }
@@ -621,12 +625,14 @@
                   </td>
                   <td>{{ b.notes || '—' }}</td>
                   <td class="td-actions">
-                    @if (b.status === 'PENDING') {
-                      <!-- FIX: was confirmBooking(b.id) — now adminConfirmBooking(b.id) -->
-                      <button class="btn-outline btn-sm" (click)="adminConfirmBooking(b.id)">
-                        <i class="bi bi-check-circle"></i> Confirm
-                      </button>
-                    }
+                    <div class="action-wrap">
+                      @if (b.status === 'PENDING') {
+                        <!-- FIX: was confirmBooking(b.id) — now adminConfirmBooking(b.id) -->
+                        <button class="btn-outline btn-sm" (click)="adminConfirmBooking(b.id)">
+                          <i class="bi bi-check-circle"></i> Confirm
+                        </button>
+                      }
+                    </div>
                   </td>
                 </tr>
               }
